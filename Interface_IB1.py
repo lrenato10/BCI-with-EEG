@@ -1,4 +1,5 @@
 from gerargif import ImageLabel
+from open_dataset import AbrirEEG
 from tkinter import*#para toda a interface grafica
 from tkinter import messagebox#para as caixas de mensagem
 from tkinter import ttk#treeview eh um metodo de ttk
@@ -36,43 +37,41 @@ class Janela_Opcoes():
         self.opcoes['bg'] = '#524f4f'
         self.count=1
         Label(self.opcoes, text='Selecione Uma das Opções',fg='white',bg= '#524f4f'  ).grid(row=0, column=0, columnspan=1, padx=10,pady=10)  # centraliza o label na coluna
-        Button(self.opcoes, text='Treinamento',width=20, bg='#0404B4',fg='white',command=self.Treinamento).grid(row=1, column=0, padx=50, pady=20)#cares criadas em https://html-color-codes.info/
-        Button(self.opcoes, text='Operação', width=20, bg='#0404B4',fg='white',command=self.Operacao).grid(row=2, column=0, padx=50, pady=20)
-        Button(self.opcoes, text='Instruções', width=20, bg='#0404B4',fg='white',command=self.Instrucoes).grid(row=3, column=0,padx=50,pady=20)
+        Button(self.opcoes, text='Treinamento',width=20, bg='#0404B4',fg='white',command=Treinamento).grid(row=1, column=0, padx=50, pady=20)#cares criadas em https://html-color-codes.info/
+        Button(self.opcoes, text='Operação', width=20, bg='#0404B4',fg='white',command=Operacao).grid(row=2, column=0, padx=50, pady=20)
+        Button(self.opcoes, text='Instruções', width=20, bg='#0404B4',fg='white',command=Instrucoes).grid(row=3, column=0,padx=50,pady=20)
+        print('test')
         self.opcoes.mainloop()
     
 
     #=============================================Janela de Treinamento=================================================
-    def Treinamento(self):
+class Treinamento():
+    def __init__(self):     
         self.treinamento = Toplevel()  # é uma instancia de tk se a janela root for fechada ela tambpem será fechada
         self.treinamento.resizable(False, False) # ampliar a janela
         self.treinamento.title('Treinamento')
         self.treinamento['bg'] = '#86cee4'
-        '''picEsquerda = 'Imagem IB1 projeto final.png'
-        picEsquerda1 = p.Image.open(picEsquerda)
-        photo = ptk.PhotoImage(picEsquerda1)
-        labelImage = Label(self.carregamento, image=photo)
-        labelImage.grid(row=0, column=0)
-        picDireita = 'Imagem IB1 projeto final.png'
-        picDireita1 = p.Image.open(picDireita)
-        photo = ptk.PhotoImage(pic1)
-        labelImage = Label(self.carregamento, image=photo)
-        labelImage.grid(row=0, column=1)'''
-        gif = ImageLabel(self.treinamento)
-        gif.grid(row=0, column=1)
-        gif.load('direita.gif')
-        Label(self.treinamento, text='Mão Direita',fg='black',bg= '#86cee4'  ).grid(row=1, column=1, columnspan=1, padx=10,pady=10)  # centraliza o label na coluna
         
-        gif = ImageLabel(self.treinamento)
-        gif.grid(row=0, column=0)
-        gif.load('esquerda.gif')
-        Label(self.treinamento, text='Mão Esquerda',fg='black',bg= '#86cee4'  ).grid(row=1, column=0, columnspan=1, padx=10,pady=10)  # centraliza o label na coluna
+        self.gif_esq = ImageLabel(self.treinamento)
+        self.gif_esq.grid(row=0, column=0)
+        self.gif_esq.load('esquerda.gif',10**8)
+        Label(self.treinamento, text='Mão Esquerda',fg='black',bg= '#86cee4'  ).grid(row=1, column=0, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao esquerda
         
-        acao = Label(self.treinamento, fg='green')
-        acao.grid(row=2, column=0,columnspan=2)
-        #Button(self.treinamento, fg='blue', text='Start', command=self.Start).grid(row=3, column=0,columnspan=2)
-        Button(self.treinamento, text='Abrir EEG', width=20, bg='#0404B4',fg='white',command=self.AbrirEEG).grid(row=4, column=0,columnspan=2,padx=10,pady=30)
+        self.gif_dir = ImageLabel(self.treinamento)
+        self.gif_dir.grid(row=0, column=1)
+        self.gif_dir.load('direita.gif',10**8)
+        Label(self.treinamento, text='Mão Direita',fg='black',bg= '#86cee4'  ).grid(row=1, column=1, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao direita
         
+        
+        self.Lcontador=Label(self.treinamento, text='0',fg='black',bg= '#86cee4'  )
+        self.Lcontador.grid(row=3, column=0, columnspan=2, padx=10,pady=10)  # centraliza o label na coluna
+        Button(self.treinamento, text='Abrir EEG', width=20, bg='#0404B4',fg='white',command=AbrirEEG).grid(row=4, column=0,columnspan=2,padx=10,pady=30)
+        self.AtualizaContador()
+        Button(self.treinamento, text='Esquerda', width=20, bg='#0404B4',fg='white',command=self.ApenasEsquerda).grid(row=5, column=0,columnspan=1,padx=10,pady=30)
+        Button(self.treinamento, text='Direita', width=20, bg='#0404B4',fg='white',command=self.ApenasDireita).grid(row=5, column=1,columnspan=1,padx=10,pady=30)
+        
+        
+        self.treinamento.mainloop()
     '''
     def Start(self):
         tempo_inicial=time.time()#tempo inicial
@@ -81,33 +80,52 @@ class Janela_Opcoes():
                 acao['text'] = 2#int(time.time()-tempo_inicial)
                 tempo=time.time()
        ''' 
-            
+    
+    def AtualizaContador(self):
+        self.Lcontador['text']=self.gif_dir.imprime_contador()
+        print('agora')
         
-    def AbrirEEG(self):
-        self.treinamento = Toplevel()  # é uma instancia de tk se a janela root for fechada ela tambpem será fechada
-        self.treinamento.resizable(False, False) # ampliar a janela
-        self.treinamento.title('Gráfico EEG')
-        self.treinamento['bg'] = '#8A0808'  
+        
+    # def AbrirEEG(self):
+    #     self.treinamento = Toplevel()  # é uma instancia de tk se a janela root for fechada ela tambpem será fechada
+    #     self.treinamento.resizable(False, False) # ampliar a janela
+    #     self.treinamento.title('Gráfico EEG')
+    #     self.treinamento['bg'] = '#8A0808'  
+        
+    def ApenasDireita(self):
+        self.gif_dir.unload()
+        self.gif_dir.load('direita.gif',100)
+        self.gif_esq.unload()
+        self.gif_esq.load('esquerda.gif',10**8)
+    def ApenasEsquerda(self):
+        self.gif_dir.unload()
+        self.gif_dir.load('direita.gif',10**8)
+        self.gif_esq.unload()
+        self.gif_esq.load('esquerda.gif',100)
         
 
-
-#==================================================================================================================
-    def Operacao(self):
+#================================================Janela de Operacao==================================================
+class Operacao():
+    def __init__(self): 
         self.operacao = Toplevel()  # é uma instancia de tk se a janela root for fechada ela tambpem será fechada
         self.operacao.resizable(False, False) # ampliar a janela
         self.operacao.title('Operação')
         self.operacao['bg'] = '#8A0808'
-        gif = ImageLabel(self.operacao)
-        gif.pack(side=RIGHT)
-        gif.load('direita.gif')
-
-        gif = ImageLabel(self.operacao)
-        gif.pack(side=LEFT)
-        gif.load('esquerda.gif')
-
+        
+        self.gif_dir = ImageLabel(self.operacao)
+        self.gif_dir.grid(row=0, column=1)
+        self.gif_dir.load('direita.gif',100)
+        Label(self.operacao, text='Mão Direita',fg='black',bg= '#86cee4'  ).grid(row=1, column=1, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao direita
+        
+        self.gif_esq = ImageLabel(self.operacao)
+        self.gif_esq.grid(row=0, column=0)
+        self.gif_esq.load('esquerda.gif',100)
+        Label(self.operacao, text='Mão Esquerda',fg='black',bg= '#86cee4'  ).grid(row=1, column=0, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao esquerda
 
     #==============================================Janela de Instruções================================================
-    def Instrucoes(self):
+class Instrucoes():
+    def __init__(self): 
+        self.count=1
         self.instrucoes = Toplevel()  # é uma instancia de tk se a janela root for fechada ela tambpem será fechada
         #self.instrucoes.resizable(False, False) # ampliar a janela
         #self.instrucoes.geometry('700x340')
@@ -120,7 +138,8 @@ class Janela_Opcoes():
         Button(self.instrucoes, text='Próxima', width=20, bg='#f29cc2',fg='black',command=self.Incremento).pack(side=RIGHT)
         Button(self.instrucoes, text='Anterior', width=20, bg='#f29cc2',fg='black',command=self.Decremento).pack(side=LEFT)
         Button(self.instrucoes, text='Eletrodos EEG', width=20, bg='#f8ef83',fg='black',command=self.EletrodosEEG).pack()
-    
+        self.instrucoes.mainloop()
+                
     def EletrodosEEG(self):
         self.instrucao3 = Toplevel()
         self.instrucao3.title('Posicionamento dos Eletrodos')
@@ -130,7 +149,6 @@ class Janela_Opcoes():
         labelImage = Label(self.instrucao3, image=photo)
         labelImage.grid(row=0, column=0)
         
-        self.instrucoes.mainloop()
         
     def Comparacao(self):
         self.L1['text'] = '{}/7'.format(self.count)
