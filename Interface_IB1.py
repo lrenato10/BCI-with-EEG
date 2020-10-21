@@ -15,10 +15,10 @@ class Janela_Carregamento():
         self.carregamento=Tk()
         self.carregamento.title('EEG')
         self.carregamento['bg'] = '#524f4f'
-        pic = 'Imagem IB1 projeto final.png'
-        pic1 = p.Image.open(pic)
-        photo = ptk.PhotoImage(pic1)
-        labelImage = Label(self.carregamento, image=photo)
+        self.pic = 'Imagem IB1 projeto final.png'
+        self.pic1 = p.Image.open(self.pic)
+        self.photo = ptk.PhotoImage(self.pic1)
+        labelImage = Label(self.carregamento, image=self.photo)
         labelImage.grid(row=0, column=0)
         Label(self.carregamento, text='V 1.0',fg='white',bg= '#524f4f'  ).grid(row=0, column=0, columnspan=2, padx=10,pady=10)  # centraliza o label na coluna
         self.carregamento.after(1000, self.destroi)
@@ -143,10 +143,10 @@ class Instrucoes():
     def EletrodosEEG(self):
         self.instrucao3 = Toplevel()
         self.instrucao3.title('Posicionamento dos Eletrodos')
-        pic = 'eletrodo.png'
-        pic1 = p.Image.open(pic)
-        photo = ptk.PhotoImage(pic1)
-        labelImage = Label(self.instrucao3, image=photo)
+        self.pic = 'eletrodo.png'
+        self.pic1 = p.Image.open(self.pic)
+        self.photo = ptk.PhotoImage(self.pic1)
+        labelImage = Label(self.instrucao3, image=self.photo)
         labelImage.grid(row=0, column=0)
         
         
