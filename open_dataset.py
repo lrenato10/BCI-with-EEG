@@ -9,19 +9,18 @@ import os
 import numpy as np
 import mne
 from mne import read_evokeds
-import numpy as np
 import matplotlib.pyplot as plt
 
 def AbrirEEG():
     raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
-
+    
     raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
     print(raw)
     print(raw.info)
-
-#%% ===================================================plot pronto====================================================
+    
+    #%% ===================================================plot pronto====================================================
     raw.plot_psd(fmax=125)#espectro de frequencia com valor maximo em 110 Hz
-    raw.plot(duration=40, n_channels=3)#duracao da amostra de 150 s e mostra os 3 primeiros canais (EEG)
+    raw.plot(duration=20, n_channels=3)#duracao da amostra de 150 s e mostra os 3 primeiros canais (EEG)
 
 
 # #%% ==============================================plot a partir de vetor==============================================

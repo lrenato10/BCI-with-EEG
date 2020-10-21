@@ -7,7 +7,8 @@ import time
 #bilbioteca para por a imagem
 import PIL as p
 import PIL.ImageTk as ptk
-
+import random
+from threading import Thread 
 
 class Janela_Carregamento():
     def __init__(self):#metodo construtor, é sempre executado quando chama a classe
@@ -35,7 +36,6 @@ class Janela_Opcoes():
         self.opcoes=Tk()
         self.opcoes.title('Janela de opções')
         self.opcoes['bg'] = '#524f4f'
-        self.count=1
         self.opcoes.resizable(True, True)
         Label(self.opcoes, font=('helvetica',20), text='Selecione uma das opções',fg='white',bg= '#524f4f'  ).grid(row=0, column=0, columnspan=1, padx=10,pady=10) # centraliza o label na coluna
         Button(self.opcoes, font=('helvetica',15),text='Treinamento',width=15, height=2, bg='#0404B4',fg='white',command=Treinamento).grid(row=1, column=0, padx=70, pady=40)#cares criadas em https://html-color-codes.info/
@@ -54,7 +54,7 @@ class Treinamento():
         self.treinamento.title('Treinamento')
         self.treinamento['bg'] = '#86cee4'
         
-        self.Lcontador=Label(self.treinamento, text='0',fg='black',bg= '#86cee4'  )
+        self.Lcontador=Label(self.treinamento, text='1',fg='black',bg= '#86cee4'  )
         self.Lcontador.grid(row=3, column=0, columnspan=2, padx=10,pady=10)  # centraliza o label na coluna
         
         self.gif_esq = ImageLabel(self.treinamento)
@@ -73,7 +73,10 @@ class Treinamento():
         #self.AtualizaContador()
         Button(self.treinamento, text='Esquerda', width=20, bg='#0404B4',fg='white',command=self.ApenasEsquerda).grid(row=5, column=0,columnspan=1,padx=10,pady=30)
         Button(self.treinamento, text='Direita', width=20, bg='#0404B4',fg='white',command=self.ApenasDireita).grid(row=5, column=1,columnspan=1,padx=10,pady=30)
+        Button(self.treinamento, text='Começar', width=20, bg='#0404B4',fg='white',command=self.IniciaDataSet).grid(row=6, column=0,columnspan=2,padx=10,pady=30)
+        Button(self.treinamento, text='Emergência', width=20, bg='#0404B4',fg='white',command=self.ParadeDeEmergencia).grid(row=7, column=0,columnspan=2,padx=10,pady=30)
         
+        self.threadrunning=False
         
         self.treinamento.mainloop()
     '''
@@ -85,6 +88,25 @@ class Treinamento():
                 tempo=time.time()
        ''' 
     
+    def Thread_DataSet(self):
+        count=0
+        while (count<=120 and self.threadrunning):
+            mao=random.randint(0,1)
+            if (mao==0):#mao esquerda
+                self.ApenasEsquerda()
+            elif (mao==1):#mao direita
+                self.ApenasDireita()
+            count+=1
+            time.sleep(3)
+    
+    def IniciaDataSet(self):
+        self.threadrunning=True
+        self.t=Thread(target=self.Thread_DataSet)
+        self.t.start()
+    
+    def ParadeDeEmergencia(self):
+        self.threadrunning=False
+            
     def AtualizaContador(self):
         self.Lcontador['text']=self.gif_dir.imprime_contador()
         print('agora')
@@ -97,16 +119,17 @@ class Treinamento():
     #     self.treinamento['bg'] = '#8A0808'  
         
     def ApenasDireita(self):
-        self.gif_dir.unload()
+        #self.gif_dir.unload()
         self.gif_dir.load('direita.gif',100,self.Lcontador)
-        self.gif_esq.unload()
-        self.gif_esq.load('esquerda.gif',10**8,self.Lcontador)
+        #self.gif_esq.unload()
+        #self.gif_esq.load('esquerda.gif',10**8,self.Lcontador)
+        self.AtualizaContador()
     def ApenasEsquerda(self):
-        self.gif_dir.unload()
-        self.gif_dir.load('direita.gif',10**8,self.Lcontador)
-        self.gif_esq.unload()
+        #self.gif_dir.unload()
+        #self.gif_dir.load('direita.gif',10**8,self.Lcontador)
+        #self.gif_esq.unload()
         self.gif_esq.load('esquerda.gif',100,self.Lcontador)
-        
+        self.AtualizaContador()
 
 #================================================Janela de Operacao==================================================
 class Operacao():
