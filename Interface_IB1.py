@@ -25,7 +25,7 @@ class Janela_Carregamento():
         labelImage = Label(self.carregamento, image=self.photo)
         labelImage.grid(row=0, column=0)
         Label(self.carregamento, text='V 1.0',fg='white',bg= '#524f4f'  ).grid(row=0, column=0, columnspan=2, padx=10,pady=10)  # centraliza o label na coluna
-        self.carregamento.after(1000, self.destroi)
+        self.carregamento.after(2000, self.destroi)
         self.carregamento.mainloop()
         
     def destroi(self):
@@ -37,14 +37,13 @@ class Janela_Opcoes():
     def __init__(self):#metodo construtor, é sempre executado quando chama a classe
         #self é um escopo geral da variavel, pode usar self.x em todos os metodos pq deixa de ser var local
         self.opcoes=Tk()
-        self.opcoes.title('Janela de opções')
-        self.opcoes['bg'] = '#524f4f'
+        self.opcoes.title('Opções')
+        self.opcoes['bg'] = '#86cee4'
         self.opcoes.resizable(True, True)
-        Label(self.opcoes, font=('helvetica',20), text='Selecione uma das opções',fg='white',bg= '#524f4f'  ).grid(row=0, column=0, columnspan=1, padx=10,pady=10) # centraliza o label na coluna
-        Button(self.opcoes, font=('helvetica',15),text='Treinamento',width=15, height=2, bg='#0404B4',fg='white',command=Janela_Treinamento).grid(row=1, column=0, padx=70, pady=40)#cares criadas em https://html-color-codes.info/
-        #self.pega.font(('helvetica', 50, 'underline italic')) 
-        Button(self.opcoes, font=('helvetica', 15), text='Operação', width=15, height=2, bg='#0404B4',fg='white',command=Janela_Operacao).grid(row=2, column=0, padx=70, pady=40)
-        Button(self.opcoes, font=('helvetica', 15), text='Instruções', width=15, height=2, bg='#0404B4',fg='white',command=Janela_Instrucoes).grid(row=3, column=0,padx=70,pady=40)
+        Label(self.opcoes, font=('helvetica',20), text='Selecione uma das opções',fg='black',bg= '#86cee4'  ).grid(row=0, column=0, columnspan=1, padx=10,pady=10) # centraliza o label na coluna
+        Button(self.opcoes, font=('helvetica',15),text='Treinamento',width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='black',command=Janela_Treinamento).grid(row=1, column=0, padx=70, pady=40)#cares criadas em https://html-color-codes.info/
+        Button(self.opcoes, font=('helvetica', 15), text='Operação', width=15, height=2, relief=GROOVE ,bg='#f29cc2',fg='black',command=Janela_Operacao).grid(row=2, column=0, padx=70, pady=40)
+        Button(self.opcoes, font=('helvetica', 15), text='Instruções', width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='black',command=Janela_Instrucoes).grid(row=3, column=0,padx=70,pady=40)
         print('test')
         self.opcoes.mainloop()
     
