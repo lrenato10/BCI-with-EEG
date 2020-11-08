@@ -38,7 +38,7 @@ Y=np.array(df['target'])
 
 X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.2)#separa dados de treinamento e validacao com 20% de validacao
 
-model=SVC(kernel='poly',degree=3,C=100000)#chama o modelo como um classificador de vetores de suporte
+model=SVC(kernel='poly',degree=3,C=10)#chama o modelo como um classificador de vetores de suporte
 #C grande reduz a margem, kernel altera o formato do hiperplano
 model.fit(X_train,Y_train)#treina o modelo com a SVM
 Y_predict=model.predict(X_test)#passa no modelo para fazer a predicao
