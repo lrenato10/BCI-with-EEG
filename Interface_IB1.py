@@ -19,7 +19,7 @@ class Janela_Carregamento():
         self.carregamento=Tk()
         self.carregamento.title('EEG')
         self.carregamento['bg'] = '#524f4f'
-        self.pic = 'Imagem IB1 projeto final.png'
+        self.pic = 'Imagens/Imagem IB1 projeto final.png'
         self.pic1 = p.Image.open(self.pic)
         self.photo = ptk.PhotoImage(self.pic1)
         labelImage = Label(self.carregamento, image=self.photo)

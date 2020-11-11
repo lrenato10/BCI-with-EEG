@@ -12,20 +12,16 @@ from mne import read_evokeds
 import matplotlib.pyplot as plt
 
 class DataSetEEG():
-    def __init__(self):
-        raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
-        
+    def __init__(self,ID=1,N=1):#abre o primeiro dataset por default
+        #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
+        adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
+        #print(adress)
+        raw=mne.io.read_raw_gdf(adress)
         raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
-        print(raw)
-        print(raw.info)
-        
-        #%% ===================================================plot pronto====================================================
-        #raw.plot_psd(fmax=125)#espectro de frequencia com valor maximo em 110 Hz
-        #raw.plot(duration=20, n_channels=3)#duracao da amostra de 150 s e mostra os 3 primeiros canais (EEG)
-        
-        
-        # #%% ==============================================plot a partir de vetor==============================================
-        
+        #print(raw)
+        #print(raw.info)
+        # #%% ==============================================Extraindo Dados EEG==============================================
+        temp_amostra=3#tempo em que o sinal sera extraido por tentativa
         #extraindo os eventos
         extras=raw._raw_extras
         event=extras[0]['events']
@@ -62,20 +58,20 @@ class DataSetEEG():
             if tipo[p]==769 and ant!=1023:#mao esquerda eliminando as rejeitadas
                 self.label_str[i]='esquerda'
                 self.label[i]=0
-                self.inicio[i]=posicao[p]
-                self.fim[i]=posicao[p]+4
+                self.inicio[i]=posicao[p]+(4-temp_amostra)#inicio partindo do fim da imaginacao motora
+                self.fim[i]=posicao[p]+4#fim da imaginacao motora
                 i+=1
                 
             if tipo[p]==770 and ant!=1023:#mao direita eliminando as rejeitadas
                 self.label_str[i]='direita'
                 self.label[i]=1
-                self.inicio[i]=posicao[p]
-                self.fim[i]=posicao[p]+4
+                self.inicio[i]=posicao[p]+(4-temp_amostra)#inicio partindo do fim da imaginacao motora
+                self.fim[i]=posicao[p]+4#fim da imaginacao motora
                 i+=1
         
-        #4 segundos a 250 Hz=1000 amostras
-        self.x=np.zeros((self.n,4*250))#matriz de estado x tempo
-        self.y=np.zeros((self.n,4*250,3))#matriz de estado x amplitude x canal
+        #tmepo da amostra [s] a 250 Hz (250 amostras por segundo)
+        self.x=np.zeros((self.n,temp_amostra*250))#matriz de estado x tempo
+        self.y=np.zeros((self.n,temp_amostra*250,3))#matriz de estado x amplitude x canal
         self.E=np.zeros((self.n,3))
         #separa o dataset em varias amostras
         for i in range(i):
@@ -115,5 +111,3 @@ class DataSetEEG():
         # plt.legend(lines, ch_names)
         # plt.grid()
         # plt.title(label_str[teste])
-
-#D=DataSetEEG()

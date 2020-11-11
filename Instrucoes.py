@@ -23,7 +23,7 @@ class Janela_Instrucoes():
     def EletrodosEEG(self):
         self.instrucao3 = Toplevel()
         self.instrucao3.title('Posicionamento dos Eletrodos')
-        self.pic = 'EEG 10-20.png'
+        self.pic = 'Imagens/EEG 10-20.png'
         self.pic1 = p.Image.open(self.pic)
         self.photo = ptk.PhotoImage(self.pic1)
         self.instrucao3.resizable(False, False)

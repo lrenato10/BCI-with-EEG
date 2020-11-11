@@ -17,13 +17,13 @@ class Janela_Treinamento():
         
         self.gif_esq = ImageLabel(self.treinamento)
         self.gif_esq.grid(row=0, column=0)
-        self.gif_esq.load('esquerda.gif',10**8,self.Lcontador)
+        self.gif_esq.load('Imagens/esquerda.gif',10**8,self.Lcontador)
         self.Lesquerda=Label(self.treinamento, text='Mão Esquerda',font=('helvetica',20),fg='black',bg= '#86cee4'  )
         self.Lesquerda.grid(row=1, column=0, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao esquerda
         
         self.gif_dir = ImageLabel(self.treinamento)
         self.gif_dir.grid(row=0, column=1)
-        self.gif_dir.load('direita.gif',10**8,self.Lcontador)
+        self.gif_dir.load('Imagens/direita.gif',10**8,self.Lcontador)
         self.Ldireita=Label(self.treinamento, text='Mão Direita',font=('helvetica',20),fg='black',bg= '#86cee4'  )
         self.Ldireita.grid(row=1, column=1, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao direita
         
@@ -74,12 +74,12 @@ class Janela_Treinamento():
                      
     def ApenasDireita(self):
         #self.gif_dir.unload()
-        self.gif_dir.load('direita.gif',100,self.Lcontador)
+        self.gif_dir.load('Imagens/direita.gif',100,self.Lcontador)
         #self.gif_esq.unload()
         #self.gif_esq.load('esquerda.gif',10**8,self.Lcontador)
     def ApenasEsquerda(self):
         #self.gif_dir.unload()
         #self.gif_dir.load('direita.gif',10**8,self.Lcontador)
         #self.gif_esq.unload()
-        self.gif_esq.load('esquerda.gif',100,self.Lcontador)
+        self.gif_esq.load('Imagens/esquerda.gif',100,self.Lcontador)
 
