@@ -16,18 +16,18 @@ import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
 EEG=ConcatenateDataSetEEG(1,9)#importa o dataset do(primeiro sujeito, ultimo sujeito)
-E=EEG.Data_E#energia dos sinais
-E=E/np.max(E)
-
+E=EEG.Data_bandas#energia dos sinais
 label=EEG.Data_Label#rotulos do dataset
 
-
+#E=E/np.min(E)
 #%% ===================================================treinar a SVM====================================================
-X_train, X_test, Y_train, Y_test = train_test_split(E,label,test_size=0.2)#separa dados de treinamento e validacao com 20% de validacao
 
-model=SVC(kernel='rbf',degree=3,C=1)#chama o modelo como um classificador de vetores de suporte
+X_train, X_test, Y_train, Y_test = train_test_split(E,label,test_size=0.3)#separa dados de treinamento e validacao com 20% de validacao
+
+model=SVC(kernel='rbf',degree=3,C=50, tol=1e-5,gamma='scale',cache_size=20000)#chama o modelo como um classificador de vetores de suporte
 #C grande reduz a margem, kernel altera o formato do hiperplano
-
+#C=>inverso da margem
+#gamma => inverso do raio do rbf
 model.fit(X_train,Y_train)#treina o modelo com a SVM
 Y_predict=model.predict(X_test)#passa no modelo para fazer a predicao
 print('Treinamento')

@@ -115,4 +115,4 @@ def AbrirEEG():
     # plt.grid()
     # plt.title(tag_str[teste])
     
-#AbrirEEG()
+AbrirEEG()

@@ -18,19 +18,21 @@ class ConcatenateDataSetEEG():
         Data1=[]
         Data2=[]
         self.Data_Label=np.array([0])
-        self.Data_E=np.array([[0,0,0]])
+        self.Data_bandas=np.zeros((1,15))
         for i in range(ID_final-ID_inicial+1):
             #extrai os dados do usuario de ID i
             self.Data1=DataSetEEG(i+ID_inicial,1)
             self.Data2=DataSetEEG(i+ID_inicial,2)
             
             #concatena os dados do usuario de ID i
-            self.Data12_label=np.concatenate((self.Data1.label, self.Data2.label), axis=0)
-            self.Data12_E=np.concatenate((self.Data1.E, self.Data2.E), axis=0)
+            self.Data12_label=np.concatenate((self.Data1.label, self.Data2.label), axis=0)#concatena na vertical
+            self.Data12_bandas=np.concatenate((self.Data1.bandas, self.Data2.bandas), axis=0)#concatena na vertical
             
             #concatena todos os ID para um unico DataSet
-            self.Data_Label=np.concatenate((self.Data_Label, self.Data12_label), axis=0)
-            self.Data_E=np.concatenate((self.Data_E, self.Data12_E), axis=0)
+            self.Data_Label=np.concatenate((self.Data_Label, self.Data12_label), axis=0)#concatena na verticl
+            self.Data_bandas=np.concatenate((self.Data_bandas, self.Data12_bandas), axis=0)#concatena na vertical
             
         self.Data_Label=np.delete(self.Data_Label,0,0)#apega primeira linha
-        self.Data_E=np.delete(self.Data_E,0,0)#apega primeira linha
+        self.Data_bandas=np.delete(self.Data_bandas,0,0)#apega primeira linha
+
+#D=ConcatenateDataSetEEG()
