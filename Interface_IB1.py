@@ -1,4 +1,7 @@
 from gerargif import ImageLabel
+from SVM.classe_SVM import mySVM#importa a pasta das SVM
+from SVM.Extraindo_Amostras_EEG import DataSetEEG
+from SVM.BigDataSetEEG import ConcatenateDataSetEEG 
 from Treinamento import Janela_Treinamento
 from Instrucoes import Janela_Instrucoes
 from Operacao import Janela_Operacao
@@ -12,6 +15,8 @@ import PIL as p
 import PIL.ImageTk as ptk
 import random
 from threading import Thread 
+
+#SVM=mySVM()
 
 class Janela_Carregamento():
     def __init__(self):#metodo construtor, é sempre executado quando chama a classe

@@ -15,13 +15,16 @@ class DataSetEEG():
     def __init__(self,ID=9,N=1):#abre o primeiro dataset por default
         #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
         adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
+        #adress='D:\Engenharia\Python\IB1 EEG\EEG\SVM\DataSet\BCICIV_2b_gdf'+str(ID)+'0'+str(N)+'T.gdf'
         #print(adress)
         raw=mne.io.read_raw_gdf(adress)
         raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
         #print(raw)
         #print(raw.info)
         # #%% ==============================================Extraindo Dados EEG==============================================
-        temp_amostra=3#tempo em que o sinal sera extraido por tentativa
+        
+        temp_amostra=4#tempo em que o sinal sera extraido por tentativa
+        
         #extraindo os eventos
         extras=raw._raw_extras
         event=extras[0]['events']
@@ -58,15 +61,19 @@ class DataSetEEG():
             if tipo[p]==769 and ant!=1023:#mao esquerda eliminando as rejeitadas
                 self.label_str[i]='esquerda'
                 self.label[i]=0
-                self.inicio[i]=posicao[p]+(4-temp_amostra)#inicio partindo do fim da imaginacao motora
-                self.fim[i]=posicao[p]+4#fim da imaginacao motora
+                #self.inicio[i]=posicao[p]+(4-temp_amostra)#inicio partindo do fim da imaginacao motora
+                #self.fim[i]=posicao[p]+4#fim da imaginacao motora
+                self.inicio[i]=posicao[p]#inicio partindo do fim da imaginacao motora
+                self.fim[i]=posicao[p]+temp_amostra#fim da imaginacao motora
                 i+=1
                 
             if tipo[p]==770 and ant!=1023:#mao direita eliminando as rejeitadas
                 self.label_str[i]='direita'
                 self.label[i]=1
-                self.inicio[i]=posicao[p]+(4-temp_amostra)#inicio partindo do fim da imaginacao motora
-                self.fim[i]=posicao[p]+4#fim da imaginacao motora
+                #self.inicio[i]=posicao[p]+(4-temp_amostra)#inicio partindo do fim da imaginacao motora
+                #self.fim[i]=posicao[p]+4#fim da imaginacao motora
+                self.inicio[i]=posicao[p]#inicio partindo do fim da imaginacao motora
+                self.fim[i]=posicao[p]+temp_amostra#fim da imaginacao motora
                 i+=1
         
         #tmepo da amostra [s] a 250 Hz (250 amostras por segundo)

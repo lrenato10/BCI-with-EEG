@@ -4,7 +4,8 @@ Created on Wed Nov 11 15:38:23 2020
 
 @author: Luiz Renato
 """
-from Extraindo_Amostras_EEG import DataSetEEG
+
+from SVM.Extraindo_Amostras_EEG import DataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split#separa os dados de treinamento e valicadao
@@ -34,5 +35,6 @@ class ConcatenateDataSetEEG():
             
         self.Data_Label=np.delete(self.Data_Label,0,0)#apega primeira linha
         self.Data_bandas=np.delete(self.Data_bandas,0,0)#apega primeira linha
+    
 
 #D=ConcatenateDataSetEEG()

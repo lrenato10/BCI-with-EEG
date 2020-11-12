@@ -12,7 +12,7 @@ from mne import read_evokeds
 import matplotlib.pyplot as plt
 
 def AbrirEEG():
-    raw=mne.io.read_raw_gdf('SVM/DataSet/BCICIV_2b_gdf/B0102T.gdf')
+    raw=mne.io.read_raw_gdf('SVM/DataSet/BCICIV_2b_gdf/B0401T.gdf')
     
     raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
     print(raw)
@@ -115,4 +115,4 @@ def AbrirEEG():
     # plt.grid()
     # plt.title(tag_str[teste])
     
-AbrirEEG()
+#AbrirEEG()

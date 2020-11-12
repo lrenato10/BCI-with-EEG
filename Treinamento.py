@@ -49,7 +49,7 @@ class Janela_Treinamento():
     
     def Thread_DataSet(self):
         count=0
-        while (count<120 and self.threadrunning):
+        while (count<120 and self.threadrunning):#roda o gif 120 vezes
             mao=random.randint(0,1)
             if (mao==0):#mao esquerda
                 self.ApenasEsquerda()

@@ -6,7 +6,7 @@ from itertools import count
 
 class ImageLabel(tk.Label):
     """a label that displays images, and plays them if they are gifs"""    
-    def load(self, im,atraso,objeto):
+    def load(self, im,atraso,objeto=None):
         if isinstance(im, str):
             im = Image.open(im)
         self.count = 0
