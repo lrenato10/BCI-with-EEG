@@ -33,7 +33,7 @@ class Janela_Treinamento():
         #Button(self.treinamento, text='Esquerda', width=20, bg='#0404B4',fg='white',command=self.ApenasEsquerda).grid(row=5, column=0,columnspan=1,padx=10,pady=30)
         #Button(self.treinamento, text='Direita', width=20, bg='#0404B4',fg='white',command=self.ApenasDireita).grid(row=5, column=1,columnspan=1,padx=10,pady=30)
         Button(self.treinamento, text='Iniciar', width=20, bg='#f8ef83',fg='black',command=self.IniciaDataSet).grid(row=5, column=0,columnspan=1,padx=10,pady=30)
-        Button(self.treinamento, text='Parar!!!', width=20, bg='#f8ef83',fg='red',command=self.ParadeDeEmergencia).grid(row=5, column=1,columnspan=1,padx=10,pady=30)
+        Button(self.treinamento, text='Parar!!!', width=20, bg='#f8ef83',fg='red',command=self.ParadaDeEmergencia).grid(row=5, column=1,columnspan=1,padx=10,pady=30)
         
         self.threadrunning=False
        
@@ -69,7 +69,7 @@ class Janela_Treinamento():
         self.t=Thread(target=self.Thread_DataSet)
         self.t.start()
     
-    def ParadeDeEmergencia(self):
+    def ParadaDeEmergencia(self):
         self.threadrunning=False
                      
     def ApenasDireita(self):

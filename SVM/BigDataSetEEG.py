@@ -15,7 +15,7 @@ import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
 class ConcatenateDataSetEEG():
-    def __init__(self,ID_inicial=1,ID_final=1):#pega apenas para o primeiro sujeito
+    def __init__(self,ID_inicial=4,ID_final=4):#pega apenas para o primeiro sujeito
         Data1=[]
         Data2=[]
         self.Data_Label=np.array([0])

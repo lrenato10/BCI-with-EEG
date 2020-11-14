@@ -55,7 +55,7 @@ class Janela_Instrucoes():
         elif (self.count==6):
             self.L2['text']='Para visualizar qual mão o usuário teve a intenção de mexer,\n vá em "Operação" no menu principal e siga as instruções.'
         elif (self.count==7):
-            self.L2['text']='"Operação":\n\n Para visualizar o sinal eletroencefalográfico da operação, selecione "Abrir EEG"\n Para iniciar a operação, selecione "Iniciar"\n Caso seja necessário parar a execução da operação, selecione "Parar!!"'
+            self.L2['text']='"Operação":\n\n Para visualizar o sinal eletroencefalográfico da operação, selecione "Abrir EEG"\n Para iniciar a operação, selecione "Iniciar"\n Caso seja necessário parar a execução da operação, selecione "Parar!!"\n A luz verde indica que a inteligência artificial acertou a predição do movimento,\n já a luz vermalha indica que ela errou'
             
         
     def Incremento(self):

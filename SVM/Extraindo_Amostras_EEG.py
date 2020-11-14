@@ -10,12 +10,13 @@ import numpy as np
 import mne
 from mne import read_evokeds
 import matplotlib.pyplot as plt
+from collections import Counter
 
 class DataSetEEG():
-    def __init__(self,ID=9,N=1):#abre o primeiro dataset por default
+    def __init__(self,ID=4,N=1):#abre o primeiro dataset por default
         #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
-        adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
-        #adress='D:\Engenharia\Python\IB1 EEG\EEG\SVM\DataSet\BCICIV_2b_gdf'+str(ID)+'0'+str(N)+'T.gdf'
+        #adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
+        adress='D:\Engenharia\Python\IB1 EEG\EEG\SVM\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(N)+'T.gdf'
         #print(adress)
         raw=mne.io.read_raw_gdf(adress)
         raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
@@ -30,6 +31,7 @@ class DataSetEEG():
         event=extras[0]['events']
         posicao=event[1]/250#tempo inicial do evento
         tipo=event[2]#tipo de evento (segue a tabela)
+        #print(Counter(tipo))#print a quantidade de cada flag
         duracao=event[4]/250#duracao do evento
         
         n_time_samps = raw.n_times
@@ -119,7 +121,8 @@ class DataSetEEG():
                 #plt.plot(self.freq[L],self.PSD[L,j])
                 #plt.xlim(self.freq[L[0]],self.freq[L[-1]])
         self.bandas=np.concatenate((self.delta,self.teta, self.alfa,self.beta, self.gamma), axis=1)#concatena na horizontal
-            
+        
+        
             
             
             #Y2=self.Y**2#amplitude ao quadrado do sinal dos eletodos
@@ -149,4 +152,4 @@ class DataSetEEG():
         # plt.grid()
         # plt.title(label_str[teste])
 
-#D=DataSetEEG()
+#D=DataSetEEG(3,2)
