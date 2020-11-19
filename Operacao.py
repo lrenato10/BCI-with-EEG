@@ -7,6 +7,8 @@ import random
 import time
 from SVM.Extraindo_Amostras_EEG import DataSetEEG
 from SVM.BigDataSetEEG import ConcatenateDataSetEEG 
+import matplotlib.pyplot as plt
+from Real_time_plot import StripChart
 
 class Janela_Operacao():
     def __init__(self,SVM): 
@@ -42,13 +44,14 @@ class Janela_Operacao():
         self.Acertos=Label(self.operacao, text='Taxa de Acerto: 0/0',font=('helvetica',20),fg='black',bg= '#86cee4'  )#contador de acertos
         self.Acertos.grid(row=3, column=1, columnspan=1, padx=10,pady=10)# posiciona contador de acertos
         
+        Button(self.operacao, text='Abrir EEG', width=20, bg='#f29cc2',fg='white',command=self.IniciarEEG).grid(row=4, column=0,columnspan=2,padx=10,pady=10)
         
         self.SVM.treinar()
         
     def Thread_Predicao(self):
         count=0
         acertos=0
-        while (count<len(self.SVM.Y_test) and self.threadrunning):#roda o gif 120 vezes
+        while (count<len(self.SVM.Y_test) and self.threadrunning_gif):#roda o gif 120 vezes
             #amostra=random.randint(0,len(self.SVM.Y_test)-1)#pega uma amostra aleatoria de validacao
             self.SVM.predizer([self.SVM.X_test[count,:]])
             predicao=self.SVM.Y_predict
@@ -79,12 +82,48 @@ class Janela_Operacao():
             time.sleep(1.5+random.random())
     
     def IniciarPredicao(self):
-        self.threadrunning=True
-        self.t=Thread(target=self.Thread_Predicao)
-        self.t.start()
+        self.threadrunning_gif=True
+        self.tgif=Thread(target=self.Thread_Predicao)
+        self.tgif.start()
     
     def PararPredicao(self):
         self.threadrunning=False
         
         #self.Data_Label
         #self.Data_bandas
+    
+    def IniciarEEG(self):
+        self.EEG = Toplevel()
+        StripChart(self.EEG,self.SVM.Signal)
+        
+    
+    # def Thread_EEG(self):
+    #     while self.threadrunning_EEG:
+    #         fig=plt.figure()
+    #         fc3=fig.add_subplot(1,1,1)
+    #         #fcz=fig.add_subplot(2,1,2)
+    #         #fc4=fig.add_subplot(3,1,3)
+    #         fig.show()
+    #         i=0
+    #         t,c3,cz,c4=[],[],[],[]
+    #         while True:#self.threadrunning_EEG:
+    #             t.append(i/250)#tempo
+    #             #print(t)
+    #             c3.append(self.SVM.Signal[0,i,0])#sinal eletrodo c3
+    #             #print(c3)
+    #             #cz.append(SVM[0,i,0])
+    #             #c4.append(SVM[0,i,0])
+    #             fc3.plot(t,c3,color='b')
+    #             #fig.canvas.draw()
+    #             fig.canvas.draw_idle()
+    #             fc3.set_xlim(left=max(0,i-1000),right=i+100)
+    #             time.sleep(0.1)
+    #             i=i+1
+            
+    # def IniciarEEG(self):
+    #     self.threadrunning_EEG=True
+    #     self.tEEG=Thread(target=self.Thread_EEG)
+    #     self.tEEG.start()
+    
+    # def PararEEG(self):
+    #     self.threadrunning_EEG=False
