@@ -93,16 +93,19 @@ class DataSetEEG():
         #calculo da energia
         faixa=0
         dt=1/250;#tempo discreto
+        fmin=8
+        fmax=30
+        salto=2
         self.sinal_alto=np.array([])
         self.count_alto=0
         self.PSD=np.zeros((N,3))
-        self.bandas=np.zeros((self.n,3,30-8))
+        self.bandas=np.zeros((self.n,3,int((fmax-fmin)/salto)))
         self.teta=np.zeros((self.n,3))
         self.alfa=np.zeros((self.n,3))
         self.delta=np.zeros((self.n,3))
         self.beta=np.zeros((self.n,3))
         self.gamma=np.zeros((self.n,3))
-        self.bandas_flatten=np.zeros((self.n,(30-8)*3))
+        self.bandas_flatten=np.zeros((self.n,int((fmax-fmin)*3/salto)))
         for i in range(self.n):#percorre todas as tentativas
             self.X=self.x[i,:]#tempo
             self.Y=self.y[i,:,:]#eletrodo c3 cz c4 no tempo
@@ -117,7 +120,7 @@ class DataSetEEG():
                 
                 for k in range(self.temp_amostra*250):#calculo energia dentro das bandas mais baixas
                     faixa=0
-                    for f in range(8,30):
+                    for f in range(fmin,fmax,salto):
                             if (self.freq[k]>f) and (self.freq[k]<f+1):#faixa de 1 hz
                                 self.bandas[i,:,faixa]=self.bandas[i,:,faixa]+self.PSD[k,:]
                             faixa+=1
@@ -133,4 +136,4 @@ class DataSetEEG():
         #self.bandas=np.delete(self.bandas,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
         #self.label=np.delete(self.label,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
 
-D=DataSetEEG()    
+#D=DataSetEEG()    

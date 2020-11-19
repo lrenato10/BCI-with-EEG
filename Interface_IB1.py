@@ -1,5 +1,5 @@
 from gerargif import ImageLabel
-from SVM.classe_SVM import mySVM#importa a pasta das SVM
+from SVM.Class_Classifier import MyClassifier#importa o classificar
 from SVM.Extraindo_Amostras_EEG import DataSetEEG
 from SVM.BigDataSetEEG import ConcatenateDataSetEEG 
 from Treinamento import Janela_Treinamento
@@ -17,7 +17,7 @@ import random
 from threading import Thread 
 
 
-SVM=mySVM(4,4)#cria o DATASET do indivíduo 1 até o 9
+classifier=MyClassifier(4,4)#cria o DATASET do indivíduo 1 até o 9
 
 class Janela_Carregamento():
     def __init__(self):#metodo construtor, é sempre executado quando chama a classe
@@ -36,11 +36,11 @@ class Janela_Carregamento():
         
     def destroi(self):
         self.carregamento.destroy()
-        Janela_Opcoes(SVM)
+        Janela_Opcoes(classifier)
         
         
 class Janela_Opcoes():
-    def __init__(self,SVM):#metodo construtor, é sempre executado quando chama a classe
+    def __init__(self,classifier):#metodo construtor, é sempre executado quando chama a classe
         #self é um escopo geral da variavel, pode usar self.x em todos os metodos pq deixa de ser var local
         self.opcoes=Tk()
         self.opcoes.title('Opções')
@@ -48,9 +48,8 @@ class Janela_Opcoes():
         self.opcoes.resizable(True, True)
         Label(self.opcoes, font=('helvetica',20), text='Selecione uma das opções',fg='black',bg= '#86cee4'  ).grid(row=0, column=0, columnspan=1, padx=10,pady=10) # centraliza o label na coluna
         Button(self.opcoes, font=('helvetica',15),text='Treinamento',width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='black',command=Janela_Treinamento).grid(row=1, column=0, padx=70, pady=40)#cOres criadas em https://html-color-codes.info/
-        Button(self.opcoes, font=('helvetica', 15), text='Operação', width=15, height=2, relief=GROOVE ,bg='#f29cc2',fg='black',command=lambda : Janela_Operacao(SVM)).grid(row=2, column=0, padx=70, pady=40)
+        Button(self.opcoes, font=('helvetica', 15), text='Operação', width=15, height=2, relief=GROOVE ,bg='#f29cc2',fg='black',command=lambda : Janela_Operacao(classifier)).grid(row=2, column=0, padx=70, pady=40)
         Button(self.opcoes, font=('helvetica', 15), text='Instruções', width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='black',command=Janela_Instrucoes).grid(row=3, column=0,padx=70,pady=40)
-        print('test')
         self.opcoes.mainloop()
     
 

@@ -3,12 +3,14 @@ import math, random, threading, time
 
 class StripChart:
 
-    def __init__(self, root,Y):
+    def __init__(self, root,Y,indices):
         self.gf = self.makeGraph(root)
         self.cf = self.makeControls(root)
         self.gf.pack()
         self.cf.pack()
         self.Reset()
+        self.indices=indices.astype(int)#indices dos dados va validacao na ordem deles
+        #puxa a saida do EEG para todos os dados de treinamento e validacao
         self.C3=Y[:,:,0]
         self.CZ=Y[:,:,1]
         self.C4=Y[:,:,2]
@@ -50,24 +52,28 @@ class StripChart:
         self.clearstrip(self.gf.p, '#345')
 
     def do_start(self):
-        i=0
-        j=0
+        i=0#tentativa
+        j=0#tempo
         t = 0
         y2 = 0
         tx = time.time()
         while self.go:
-            y1 = self.C3[i,j]*1e4#tentativa fixa, percorre apenas o tempo
-            y2 = self.CZ[i,j]*1e4
-            y3 = self.C4[i,j]*1e4
+            y1 = self.C3[self.indices[i],j]*1e4#tentativa fixa, percorre apenas o tempo
+            y2 = self.CZ[self.indices[i],j]*1e4
+            y3 = self.C4[self.indices[i],j]*1e4#indices faz percorrer apenas os sinais das tentativas que cairam no teste
+            #y1 = self.C3[i,j]*1e4#tentativa fixa, percorre apenas o tempo
+            #y2 = self.CZ[i,j]*1e4
+            #y3 = self.C4[i,j]*1e4#indices faz percorrer apenas os sinais das tentativas que cairam no teste
             self.scrollstrip(self.gf.p,
                (0.2+y1, 0.5+y2, 0.8+y3),
                ( '#ff4', '#f40', '#4af'),
                  "" if t % 65 else "#088")
-            j+=1
-            if j==1000:#alter a tentativa a reseta o tempo
-                j=0
+            j+=1#atualiza o tempo
+            if j==250*2:#altera a tentativa a reseta o tempo
+                j=0#rezeta o tempo
                 i+=1
                 print(i)
+                print(self.indices[i])
             t += 1
             if not t % 100:#de 100 em 100
                 tx2 = time.time()

@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 from Real_time_plot import StripChart
 
 class Janela_Operacao():
-    def __init__(self,SVM): 
-        self.SVM=SVM
+    def __init__(self,classifier): 
+        self.classifier=classifier
         self.operacao = Toplevel()  # é uma instancia de tk se a janela root for fechada ela tambpem será fechada
         #self.operacao.resizable(False, False) # ampliar a janela
         self.operacao.title('Operação')
@@ -46,17 +46,17 @@ class Janela_Operacao():
         
         Button(self.operacao, text='Abrir EEG', width=20, bg='#f29cc2',fg='white',command=self.IniciarEEG).grid(row=4, column=0,columnspan=2,padx=10,pady=10)
         
-        self.SVM.treinar()
+        self.classifier.treinar()
         
     def Thread_Predicao(self):
         count=0
         acertos=0
-        while (count<len(self.SVM.Y_test) and self.threadrunning_gif):#roda o gif 120 vezes
-            #amostra=random.randint(0,len(self.SVM.Y_test)-1)#pega uma amostra aleatoria de validacao
-            self.SVM.predizer([self.SVM.X_test[count,:]])
-            predicao=self.SVM.Y_predict
+        while (count<len(self.classifier.Y_test) and self.threadrunning_gif):#roda o gif 120 vezes
+            #amostra=random.randint(0,len(self.classifier.Y_test)-1)#pega uma amostra aleatoria de validacao
+            self.classifier.predizer([self.classifier.X_test[count,:]])#prediz o dado de teste para o tentativa count
+            predicao=self.classifier.Y_predict
             print(predicao)
-            real=self.SVM.Y_test[count]
+            real=self.classifier.Y_test[count]
             print(real)
             if (real==0):#mao esquerda
                 self.gif_mov.load('Imagens/esquerda.gif',100)
@@ -94,7 +94,7 @@ class Janela_Operacao():
     
     def IniciarEEG(self):
         self.EEG = Toplevel()
-        StripChart(self.EEG,self.SVM.Signal)
+        StripChart(self.EEG,self.classifier.Signal,self.classifier.indices_test)
         
     
     # def Thread_EEG(self):

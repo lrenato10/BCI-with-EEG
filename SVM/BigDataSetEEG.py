@@ -5,8 +5,8 @@ Created on Wed Nov 11 15:38:23 2020
 @author: Luiz Renato
 """
 
-#from SVM.Extraindo_Amostras_EEG import DataSetEEG
-from Extraindo_Amostras_EEG import DataSetEEG 
+from SVM.Extraindo_Amostras_EEG import DataSetEEG
+#from Extraindo_Amostras_EEG import DataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split#separa os dados de treinamento e valicadao
@@ -21,7 +21,7 @@ class ConcatenateDataSetEEG():
         Data2=[]
         self.Base=DataSetEEG(ID_inicial,1)
         self.Data_Label=np.zeros((0))
-        self.Data_bandas=np.zeros((0,15))
+        self.Data_bandas=np.zeros((0,6))
         self.EEG_Signal=np.zeros((0,250*self.Base.temp_amostra,3))#tentativa, valores coletados no tempo da amostra, eletrodos C3 CZ C4
         for i in range(ID_final-ID_inicial+1):
             #extrai os dados do usuario de ID i

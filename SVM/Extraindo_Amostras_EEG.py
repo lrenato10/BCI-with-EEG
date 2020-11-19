@@ -24,7 +24,7 @@ class DataSetEEG():
         #print(raw.info)
         # #%% ==============================================Extraindo Dados EEG==============================================
         
-        self.temp_amostra=4#tempo em que o sinal sera extraido por tentativa
+        self.temp_amostra=2#tempo em que o sinal sera extraido por tentativa
         
         #extraindo os eventos
         extras=raw._raw_extras
@@ -65,8 +65,8 @@ class DataSetEEG():
                 self.label[i]=0
                 #self.inicio[i]=posicao[p]+(4-self.temp_amostra)#inicio partindo do fim da imaginacao motora
                 #self.fim[i]=posicao[p]+4#fim da imaginacao motora
-                self.inicio[i]=posicao[p]#inicio partindo do fim da imaginacao motora
-                self.fim[i]=posicao[p]+self.temp_amostra#fim da imaginacao motora
+                self.inicio[i]=posicao[p]+0.5#inicio partindo do fim da imaginacao motora
+                self.fim[i]=posicao[p]+self.temp_amostra+0.5#fim da imaginacao motora
                 i+=1
                 
             if tipo[p]==770 and ant!=1023:#mao direita eliminando as rejeitadas
@@ -74,8 +74,8 @@ class DataSetEEG():
                 self.label[i]=1
                 #self.inicio[i]=posicao[p]+(4-self.temp_amostra)#inicio partindo do fim da imaginacao motora
                 #self.fim[i]=posicao[p]+4#fim da imaginacao motora
-                self.inicio[i]=posicao[p]#inicio partindo do fim da imaginacao motora
-                self.fim[i]=posicao[p]+self.temp_amostra#fim da imaginacao motora
+                self.inicio[i]=posicao[p]+0.5#inicio partindo do fim da imaginacao motora
+                self.fim[i]=posicao[p]+self.temp_amostra+0.5#fim da imaginacao motora
                 i+=1
         
         #tmepo da amostra [s] a 250 Hz (250 amostras por segundo)
@@ -126,13 +126,13 @@ class DataSetEEG():
                 #plt.plot(self.freq[L],self.PSD[L,j])
                 #plt.xlim(self.freq[L[0]],self.freq[L[-1]])
                 
-        self.bandas=np.concatenate((self.delta,self.teta, self.alfa,self.beta, self.gamma), axis=1)#concatena na horizontal
+        self.bandas=np.concatenate((self.alfa,self.beta), axis=1)#concatena na horizontal
         
         #joga fora os sinais com valores elevados
         self.bandas=np.delete(self.bandas,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
         self.label=np.delete(self.label,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
+        self.y=np.delete(self.y,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
         
-            
             
             #Y2=self.Y**2#amplitude ao quadrado do sinal dos eletodos
         #     for t in range(len(Y2)):#integra no tempo
@@ -161,4 +161,4 @@ class DataSetEEG():
         # plt.grid()
         # plt.title(label_str[teste])
 
-#D=DataSetEEG(4,1)
+#D=DataSetEEG(3,2)
