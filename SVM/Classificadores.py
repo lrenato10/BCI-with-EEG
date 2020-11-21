@@ -5,8 +5,8 @@ Created on Sun Nov  8 10:38:12 2020
 @author: Luiz Renato
 """
 
-from SVM.Extraindo_Amostras_EEG import DataSetEEG
-from SVL.BigDataSetEEG import ConcatenateDataSetEEG
+from Extraindo_Amostras_EEG import DataSetEEG
+from BigDataSetEEG import ConcatenateDataSetEEG
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split#separa os dados de treinamento e valicadao
@@ -17,7 +17,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
-EEG=ConcatenateDataSetEEG(4,4)#importa o dataset do(primeiro sujeito, ultimo sujeito)
+EEG=ConcatenateDataSetEEG(8,8)#importa o dataset do(primeiro sujeito, ultimo sujeito)
 E=EEG.Data_bandas#energia os sinais
 label=EEG.Data_Label#rotulos do dataset
 

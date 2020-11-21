@@ -17,7 +17,7 @@ import random
 from threading import Thread 
 
 
-classifier=MyClassifier(4,4)#cria o DATASET do indivíduo 1 até o 9
+classifier=MyClassifier(2,2)#cria o DATASET do indivíduo 1 até o 9
 
 class Janela_Carregamento():
     def __init__(self):#metodo construtor, é sempre executado quando chama a classe

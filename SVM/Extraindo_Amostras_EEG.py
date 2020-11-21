@@ -104,7 +104,7 @@ class DataSetEEG():
         for i in range(self.n):#percorre todas as tentativas
             self.X=self.x[i,:]#tempo
             self.Y=self.y[i,:,:]#eletrodo c3 cz c4 no tempo
-            if np.max(np.abs(self.Y))>25e-6:#pega as tentativas com sinal com alto valor -> pode ser movimento ocular
+            if np.max(np.abs(self.Y))>30e-6:#pega as tentativas com sinal com alto valor -> pode ser movimento ocular
                     self.sinal_alto=np.concatenate((self.sinal_alto, [i]), axis=0)#concatena na vertical
                     self.count_alto+=1
             for j in range(3):# percorre os 3 eletrodos C3 CZ C4

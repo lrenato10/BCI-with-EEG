@@ -43,5 +43,6 @@ class MyClassifier():
         self.Y_predict=self.model.predict(X_predict)#passa no modelo para fazer a predicao
         print(type(self.Y_predict))
         
-#C=MyClassifier(1,1)
+#C=MyClassifier(1,9)
 #C.treinar()
+#C.acuracia()
