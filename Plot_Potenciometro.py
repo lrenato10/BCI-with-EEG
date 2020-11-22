@@ -3,13 +3,14 @@ import math, random, threading, time
 
 class PlotPot:
 
-    def __init__(self, root,pot):
+    def __init__(self, root,class_share):
         self.gf = self.makeGraph(root)
         self.cf = self.makeControls(root)
         self.gf.pack()
         self.cf.pack()
         self.Reset()
-        self.indices=indices.astype(int)#indices dos dados va validacao na ordem deles
+        self._class_share=class_share
+        
         #puxa a saida do EEG para todos os dados de treinamento e validacao
     def makeGraph(self, frame):
         self.sw = 1000#largura
@@ -49,17 +50,19 @@ class PlotPot:
         self.clearstrip(self.gf.p, '#345')
 
     def do_start(self):
-        i=0#tentativa
-        j=0#tempo
         t = 0
         y2 = 0
         tx = time.time()
         while self.go:
-            y1 = self.pot[i]#tentativa fixa, percorre apenas o tempo
+            y1 = self._class_share.pot[t]*0
+            #y1 = self.C3[i,j]*1e4#tentativa fixa, percorre apenas o tempo
+            #y2 = self.CZ[i,j]*1e4
+            #y3 = self.C4[i,j]*1e4#indices faz percorrer apenas os sinais das tentativas que cairam no teste
             self.scrollstrip(self.gf.p,
-               (0.2+y1, 0.5+y2, 0.8+y3),
+               (+y1),
                ( '#ff4'),
                  "" if t % 65 else "#088")
+
             t += 1
             if not t % 100:#de 100 em 100
                 tx2 = time.time()
@@ -83,19 +86,25 @@ class PlotPot:
         self.gf.coords(self.item, -1-self.x, self.top)  # scroll to just-written column
         if not self.data:
             self.data = data
-        for d in range(len(data)):
-            y0 = int((self.h-1) * (1.0-self.data[d]))   # plot all the data points
-            y1 = int((self.h-1) * (1.0-data[d]))
-            ya, yb = sorted((y0, y1))#atribui o menor para ya e o maioe para yb
-            for y in range(ya, yb+1):                   # connect the dots
-                p.put(colors[d], (self.x,y))
-                p.put(colors[d], (self.x+self.sw,y))
+        
+        y0 = int((self.h-1) * (1.0-self.data))   # plot all the data points
+        y1 = int((self.h-1) * (1.0-data))
+        ya, yb = sorted((y0, y1))#atribui o menor para ya e o maioe para yb
+        for y in range(ya, yb+1):                   # connect the dots
+            p.put(colors, (self.x,y))
+            p.put(colors, (self.x+self.sw,y))
         self.data = data            # save for next call
 
-#def main():
-#    root = Tk()
-#    root.title("StripChart")
-#    app = StripChart(root)
-#    root.mainloop()
 
-#main()
+# def main():
+#     root = Tk()
+#     root.title("StripChart")
+#     class_share=general()
+#     app = PlotPot(root,class_share)
+#     root.mainloop()
+    
+# class general():
+#     def __init__(self):
+#         self.pot=[1,2,3,4,5,6,7,8,9,10]
+
+# main()

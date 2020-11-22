@@ -87,7 +87,7 @@ class Janela_Operacao():
         self.tgif.start()
     
     def PararPredicao(self):
-        self.threadrunning=False
+        self.threadrunning_gif=False
         
         #self.Data_Label
         #self.Data_bandas

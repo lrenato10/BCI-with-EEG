@@ -12,6 +12,7 @@ from threading import Thread
 import time
 import numpy as np
 from matplotlib import pyplot as plt
+from Plot_Potenciometro import PlotPot
 
 
 class Janela_Comunicacao_Serial():
@@ -27,10 +28,13 @@ class Janela_Comunicacao_Serial():
         self.Estado_Conexao=Label(self.cs, text='Desconectado', font=('helvetica', 20), fg='red',bg= '#86cee4')
         self.Estado_Conexao.grid(row=1,column=1,columnspan=2,padx=20,pady=20)
         Button(self.cs,text='Ler Dados',command=self.IniciaLeitura, font=('helvetica', 20),bg='#f29cc2').grid(row=2,column=0,columnspan=1,padx=20,pady=20)
-        Button(self.cs,text='Encerrar',command=self.fim,font=('helvetica', 20),bg='#f29cc2').grid(row=4,column=0,columnspan=2,padx=20,pady=20)
+        Button(self.cs,text='Encerrar Leitura',command=self.fim,font=('helvetica', 20),bg='#f29cc2').grid(row=4,column=0,columnspan=2,padx=20,pady=20)
         self.Estado_Leitura=Label(self.cs, text='Clique em Ler', font=('helvetica', 20), fg='black',bg= '#86cee4'  )
         self.Estado_Leitura.grid(row=2,column=1,columnspan=1,padx=20,pady=20)
-        Button(self.cs,text='Plota EEG do uC',command=self.plotEEG,font=('helvetica', 20),bg='#f29cc2').grid(row=5,column=0,columnspan=2,padx=20,pady=20)
+        Button(self.cs,text='Plotar EEG do uC',command=self.plotEEG,font=('helvetica', 20),bg='#f29cc2').grid(row=5,column=0,columnspan=2,padx=20,pady=20)
+        Label(self.cs, text='Sinal Potenciômetro:', font=('helvetica', 20), fg='black',bg= '#86cee4').grid(row=6,column=0,columnspan=1,padx=20,pady=20)
+        self.Pot_Val=Label(self.cs, text='---', font=('helvetica', 20), fg='black',bg= '#86cee4')
+        self.Pot_Val.grid(row=6,column=1,columnspan=1,padx=20,pady=20)
         
         #variaveis para leitura do sinal do EEG
         self.Vc3=np.zeros((0))#sinal eletrodo C3
@@ -75,7 +79,7 @@ class Janela_Comunicacao_Serial():
                         int16A=(int16-((2**16)/2-1))*2
                         int16A=int16A/(self.resolucao*self.ganho)
                         self.Vc3=np.append(self.Vc3,int16A)#concatena em um vetor coluna
-                        print(int16A)
+                        #print(int16A)
                     
                     self.CZ=USB.read(1)
                     if (self.CZ==b'Z'):#Verifica byte do CZ
@@ -89,7 +93,7 @@ class Janela_Comunicacao_Serial():
                         int16A=(int16-((2**16)/2-1))*2
                         int16A=int16A/(self.resolucao*self.ganho)
                         self.Vcz=np.append(self.Vcz,int16A)#concatena em um vetor coluna
-                        print(int16A)
+                        #print(int16A)
                     
                     self.C4=USB.read(1)
                     if (self.C4==b'4'):#Verifica byte do C4
@@ -103,10 +107,11 @@ class Janela_Comunicacao_Serial():
                         int16A=(int16-((2**16)/2-1))*2
                         int16A=int16A/(self.resolucao*self.ganho)
                         self.Vc4=np.append(self.Vc4,int16A)#concatena em um vetor coluna
-                        print(int16A)
+                        #print(int16A)
                     
                     self.EB=USB.read(1)
                     if(self.EB != b'E'):#byte final de verificacao
+                        messagebox.showinfo('Perda de dado EEG!')    
                         print('Perda de dado EEG!')
                         self.threadrunning=False
                 
@@ -120,9 +125,11 @@ class Janela_Comunicacao_Serial():
                     #transforma em um inteiro a partir de MSB e LSB -> int(MSB<<8+LSB)
                     int16=int.from_bytes(self.MSB+self.LSB,byteorder='big',signed=False)#inteiro de 16 bits positivo com byte mais significativo primeiro
                     self.pot=np.append(self.pot,int16)#concatena em um vetor coluna
-                    print(int16)
+                    #print(int16)
+                    self.Pot_Val['text']=f'{int16}'
                     self.EP=USB.read(1)
                     if(self.EP != b'F'):#byte final de verificacao
+                        messagebox.showinfo('Perda de dado POT!')  
                         print('Perda de dado POT!')
                         self.threadrunning=False
             count+=1
@@ -142,6 +149,7 @@ class Janela_Comunicacao_Serial():
         self.ParaLeitura()
         USB.close()
         print('fim')
+        self.Estado_Leitura['text'] = 'Encerrado'
         
     def plotEEG(self):        
         fig, axs = plt.subplots(3, 1, figsize=(16, 6))#cria um plot com 5 colunas de imagem
@@ -150,15 +158,23 @@ class Janela_Comunicacao_Serial():
         axs[0].set_title('C3')
         axs[0].set_xlabel('Tempo [s]')
         axs[0].set_ylabel('Tensão [V]')
+        axs[0].grid()
         PCZ=axs[1].plot(np.arange(0,1,1/250),self.Vcz , lw =2.0 , color="red", label = "CZ")
         axs[1].set_title('CZ')
         axs[1].set_xlabel('Tempo [s]')
         axs[1].set_ylabel('Tensão [V]')
+        axs[1].grid()
         PC4=axs[2].plot(np.arange(0,1,1/250),self.Vc4 , lw =2.0 , color="blue", label = "C4")
         axs[2].set_title('C4')
         axs[2].set_xlabel('Tempo [s]')
         axs[2].set_ylabel('Tensão [V]')
+        axs[2].grid()
         
         #axs.legend((PC3,PCZ,PC4),('Eletrodo C3','Eletrodo CZ','Eletrodo C4'))
     
+    def Potenciometro(self):
+        PlotPot(self.cs,self)
+        
 
+
+     

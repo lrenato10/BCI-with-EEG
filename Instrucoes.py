@@ -10,7 +10,7 @@ class Janela_Instrucoes():
         #self.instrucoes.geometry('700x340')
         self.instrucoes.title('Instruções')
         self.instrucoes['bg'] = '#86cee4'
-        self.L1=Label(self.instrucoes, text='1/7', font=('helvetica', 20), fg='black',bg= '#f29cc2'  )
+        self.L1=Label(self.instrucoes, text='1/9', font=('helvetica', 20), fg='black',bg= '#f29cc2'  )
         self.L1.pack()
         self.L2=Label(self.instrucoes, font=('helvetica', 16), text='Olá, este programa detecta qual mão você movimentou através de uma inteligência artificial! \n Para entender certinho como utilizar este programa, clique em "Próxima" \n e siga as instruções atentamente!',fg='black',bg= '#86cee4',width=70,height=15 )
         self.L2.pack()
@@ -32,7 +32,7 @@ class Janela_Instrucoes():
         
         
     def Comparacao(self):
-        self.L1['text'] = '{}/7'.format(self.count)
+        self.L1['text'] = '{}/9'.format(self.count)
         if(self.count==1):
             self.L2['text'] = 'Olá, este programa detecta qual mão você movimentou através de uma inteligência artificial! \n Para entender certinho como utilizar este programa, clique em "Próximo" \n e siga as instruções atentamente!'
         elif (self.count==2):
@@ -51,19 +51,22 @@ class Janela_Instrucoes():
             self.BEEG['bg']='#86cee4'
             self.BEEG['text']=''
         elif (self.count==5):
-            self.L2['text']='"Treinamentos":\n\n Para visualizar o sinal eletroencefalográfico do treinamento, selecione "Abrir EEG"\n Para iniciar o treinamento, selecione "Iniciar"\n Caso seja necessário parar a execução do treinamento, selecione "Parar!!"'
+            self.L2['text']='"Treinamentos":\n\n Para visualizar o sinal eletroencefalográfico do dataset utilizado, selecione "Abrir EEG"\n Para iniciar o treinamento, selecione "Iniciar"\n Caso seja necessário parar a execução do treinamento, selecione "Parar!!"'
         elif (self.count==6):
             self.L2['text']='Para visualizar qual mão o usuário teve a intenção de mexer,\n vá em "Operação" no menu principal e siga as instruções.'
         elif (self.count==7):
-            self.L2['text']='"Operação":\n\n Para visualizar o sinal eletroencefalográfico da operação, selecione "Abrir EEG"\n Para iniciar a operação, selecione "Iniciar"\n Caso seja necessário parar a execução da operação, selecione "Parar!!"\n A luz verde indica que a inteligência artificial acertou a predição do movimento,\n já a luz vermalha indica que ela errou'
-            
+            self.L2['text']='"Operação":\n\n Para visualizar o sinal eletroencefalográfico da inteção de movimento, selecione "Abrir EEG"\n Para iniciar as predições, selecione "Iniciar"\n Caso seja necessário parar a execução da operação, selecione "Parar!!"\n OBS: A luz verde indica que a inteligência artificial acertou a predição do movimento,\n já a luz vermalha indica que ela errou \n A taxa de acerto mostra quantas predições foram feitas corretamente '
+        elif (self.count==8):
+            self.L2['text']='Para fazer a conexão do microcontrolador,\n vá em "Conectar Hardware" no menu principal e siga as instruções.'
+        elif (self.count==9):  
+            self.L2['text']='"Conexão Hardware":\n\n Informe o nome da porta na qual o microcontrlador foi conectado,\n exemplo: "COM3","COM4" e pressione "Iniciar Conexão"\n Para iniciar a leitura dos dados, selecione "Ler Dados"\n Caso seja necessário encerrar a leitura dos dados,\n selecione "Encerrar Leitura"\n Caso deseja-se ler os sinais dos 3 canais do EEG presentes no microcontrolador,\n pressione "Plotar EEG do uC"\n Além disso, é possivel visualizar em tempo real a leitura do sinal analógico \n digitalizado em 10 bits do potenciômetro, no canto inferior direito'
         
     def Incremento(self):
-        if ((self.count >=1 )& (self.count <7)):
+        if ((self.count >=1 )& (self.count <9)):
             self.count=self.count+1
             self.Comparacao()
         
     def Decremento(self):
-        if ((self.count >1) & (self.count <=7)):
+        if ((self.count >1) & (self.count <=9)):
             self.count=self.count-1
             self.Comparacao()

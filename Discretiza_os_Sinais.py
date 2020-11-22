@@ -40,4 +40,23 @@ def escreve_txt():
             arq_data.write(f'{SignalDp[i][j]},')
         
     arq_data.close()
+def plotEEG():        
+        fig, axs = plt.subplots(3, 1, figsize=(16, 6))#cria um plot com 5 colunas de imagem
+        fig.subplots_adjust(left=0.0625, right=0.95, wspace=0.1)
+        PC3=axs[0].plot(np.arange(0,1,1/250),SignalTentativa[:250,0] , lw =2.0 , color="green", label = "C3")
+        axs[0].set_title('C3')
+        axs[0].set_xlabel('Tempo [s]')
+        axs[0].set_ylabel('Tensão [V]')
+        axs[0].grid()
+        PCZ=axs[1].plot(np.arange(0,1,1/250),SignalTentativa[:250,1] , lw =2.0 , color="red", label = "CZ")
+        axs[1].set_title('CZ')
+        axs[1].set_xlabel('Tempo [s]')
+        axs[1].set_ylabel('Tensão [V]')
+        axs[1].grid()
+        PC4=axs[2].plot(np.arange(0,1,1/250),SignalTentativa[:250,2] , lw =2.0 , color="blue", label = "C4")
+        axs[2].set_title('C4')
+        axs[2].set_xlabel('Tempo [s]')
+        axs[2].set_ylabel('Tensão [V]')
+        axs[2].grid()
 escreve_txt()
+plotEEG()
