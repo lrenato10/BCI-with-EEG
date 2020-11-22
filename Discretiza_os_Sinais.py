@@ -30,3 +30,14 @@ SignalA=SignalTentativa*ganho*resolucao#calculo do valor de saida do conversor A
 SignalD=np.round(SignalA).astype(int)#arredonda eles para o inteiro mais próximo
 SignalDp=SignalD/2+((2**16)/2-1)#todos os numeros sao pares entao podemos dividilos por 2, e somarmos a metade da escala
 SignalDp=np.round(SignalDp).astype(int)
+
+eletrodo=['C3','CZ','C4']
+def escreve_txt():
+    arq_data=open('EEG_Signal (C3,CZ,C4).txt','w')#escreve um arquivo em branco ou cria um
+    for j in range(np.shape(SignalDp)[1]):
+        arq_data.write(f'\n{eletrodo[j]}:\n')
+        for i in range(np.shape(SignalDp)[0]-250):
+            arq_data.write(f'{SignalDp[i][j]},')
+        
+    arq_data.close()
+escreve_txt()
