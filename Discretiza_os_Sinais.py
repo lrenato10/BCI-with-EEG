@@ -7,8 +7,8 @@ Created on Fri Nov 20 07:43:59 2020
 
 #from Extraindo_Amostras_EEG import DataSetEEG
 #from BigDataSetEEG import ConcatenateDataSetEEG
-from SVM.Extraindo_Amostras_EEG import DataSetEEG
-from SVM.BigDataSetEEG import ConcatenateDataSetEEG 
+from Classificador.Extraindo_Amostras_EEG import DataSetEEG
+from Classificador.BigDataSetEEG import ConcatenateDataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split#separa os dados de treinamento e valicadao

@@ -10,18 +10,23 @@ import numpy as np
 import mne
 from mne import read_evokeds
 import matplotlib.pyplot as plt
+from tkinter import messagebox#para as caixas de mensagem
 
-def AbrirEEG():
-    raw=mne.io.read_raw_gdf('SVM/DataSet/BCICIV_2b_gdf/B0402T.gdf')
+def AbrirEEG(ID,Sessao):
+    try:
+        adress='D:\Engenharia\Python\IB1 EEG\EEG\Classificador\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(Sessao)+'T.gdf'
+        raw=mne.io.read_raw_gdf(adress)
     
-    raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
-    print(raw)
-    print(raw.info)
+        raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
+        print(raw)
+        print(raw.info)
+        
+        #%% ===================================================plot pronto====================================================
+        raw.plot_psd(fmax=125)#espectro de frequencia com valor maximo em 110 Hz
+        raw.plot(duration=20, n_channels=3)#duracao da amostra de 150 s e mostra os 3 primeiros canais (EEG)
     
-    #%% ===================================================plot pronto====================================================
-    raw.plot_psd(fmax=125)#espectro de frequencia com valor maximo em 110 Hz
-    raw.plot(duration=20, n_channels=3)#duracao da amostra de 150 s e mostra os 3 primeiros canais (EEG)
-    
+    except:
+        messagebox.showinfo('Erro!', ' ID deve estar entre 1 e 9 \n Sessão deve estar entre 1 e 3')
     
     # #%% ==============================================plot a partir de vetor==============================================
     

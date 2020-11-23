@@ -5,7 +5,7 @@ Created on Wed Nov 11 15:38:23 2020
 @author: Luiz Renato
 """
 
-from SVM.Extraindo_Amostras_EEG import DataSetEEG
+from Classificador.Extraindo_Amostras_EEG import DataSetEEG
 #from Extraindo_Amostras_EEG import DataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt

@@ -13,7 +13,7 @@ class Janela_Treinamento():
         self.treinamento['bg'] = '#86cee4'
         
         self.Lcontador=Label(self.treinamento, text='120/120',fg='black',bg= '#86cee4'  )
-        self.Lcontador.grid(row=3, column=0, columnspan=2, padx=10,pady=10)  # centraliza o label na coluna
+        self.Lcontador.grid(row=2, column=0, columnspan=2, padx=10,pady=10)  # centraliza o label na coluna
         
         self.gif_esq = ImageLabel(self.treinamento)
         self.gif_esq.grid(row=0, column=0)
@@ -27,16 +27,22 @@ class Janela_Treinamento():
         self.Ldireita=Label(self.treinamento, text='Mão Direita',font=('helvetica',20),fg='black',bg= '#86cee4'  )
         self.Ldireita.grid(row=1, column=1, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao direita
         
+        Label(self.treinamento,text='ID:',font=('helvetica',10),fg='black',bg= '#86cee4'  ).grid(row=4, column=0, columnspan=1, padx=10,pady=10)
+        self.ID=Entry(self.treinamento,font=('helvetica',10),width=2)
+        self.ID.grid(row=5,column=0,padx=20,pady=20)
+        Label(self.treinamento,text='Sessão:',font=('helvetica',10),fg='black',bg= '#86cee4'  ).grid(row=4, column=1, columnspan=1, padx=10,pady=10)
+        self.Sessao=Entry(self.treinamento,font=('helvetica',10),width=2)
+        self.Sessao.grid(row=5,column=1,padx=20,pady=20)
         
-        
-        Button(self.treinamento, text='Abrir EEG', width=20, bg='#f29cc2',fg='white',command=AbrirEEG).grid(row=4, column=0,columnspan=2,padx=10,pady=30)
+        Button(self.treinamento, text='Abrir EEG Data Set', width=20, bg='#f29cc2',fg='white',command= lambda : AbrirEEG(self.ID.get(),self.Sessao.get())).grid(row=6, column=0,columnspan=2,padx=10,pady=30)
         #Button(self.treinamento, text='Esquerda', width=20, bg='#0404B4',fg='white',command=self.ApenasEsquerda).grid(row=5, column=0,columnspan=1,padx=10,pady=30)
         #Button(self.treinamento, text='Direita', width=20, bg='#0404B4',fg='white',command=self.ApenasDireita).grid(row=5, column=1,columnspan=1,padx=10,pady=30)
-        Button(self.treinamento, text='Iniciar', width=20, bg='#f8ef83',fg='black',command=self.IniciaDataSet).grid(row=5, column=0,columnspan=1,padx=10,pady=30)
-        Button(self.treinamento, text='Parar!!!', width=20, bg='#f8ef83',fg='red',command=self.ParadaDeEmergencia).grid(row=5, column=1,columnspan=1,padx=10,pady=30)
+        self.IniciarB=Button(self.treinamento, text='Iniciar', width=20, bg='green',fg='white',command=self.IniciaDataSet)
+        self.IniciarB.grid(row=3, column=0,columnspan=1,padx=10,pady=30)
+        Button(self.treinamento, text='Parar', width=20, bg='#f29cc2',fg='white',command=self.ParadaDeEmergencia).grid(row=3, column=1,columnspan=1,padx=10,pady=30)
         
         self.threadrunning=False
-       
+
         self.treinamento.mainloop()
     '''
     def Start(self):
@@ -49,6 +55,8 @@ class Janela_Treinamento():
     
     def Thread_DataSet(self):
         count=0
+        self.IniciarB['bg']='orange'
+        self.IniciarB['text']='Treinando ...'
         while (count<120 and self.threadrunning):#roda o gif 120 vezes
             mao=random.randint(0,1)
             if (mao==0):#mao esquerda
@@ -71,6 +79,8 @@ class Janela_Treinamento():
     
     def ParadaDeEmergencia(self):
         self.threadrunning=False
+        self.IniciarB['bg']='green'
+        self.IniciarB['text']='Iniciar'
                      
     def ApenasDireita(self):
         #self.gif_dir.unload()
