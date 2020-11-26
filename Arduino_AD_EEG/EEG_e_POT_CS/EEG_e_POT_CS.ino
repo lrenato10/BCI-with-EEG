@@ -7,8 +7,8 @@ unsigned short int Vc4[250]={34079,34023,33992,33804,33884,33835,33684,33599,336
 unsigned short int pot;
 
 byte MSB, LSB;
-char SB='S',Ver='v',EB='E',C3='3',CZ='Z',C4='4';
-char S='P',F='F';
+char SB='S',Ver='v',EB='E',C3='3',CZ='Z',C4='4';//sinal EEG
+char S='P',F='F';//potenciometro
 unsigned int i=0;
 
 

@@ -27,12 +27,13 @@ class Janela_Treinamento():
         self.Ldireita=Label(self.treinamento, text='Mão Direita',font=('helvetica',20),fg='black',bg= '#86cee4'  )
         self.Ldireita.grid(row=1, column=1, columnspan=1, padx=10,pady=10)  # posiciona leganda da mao direita
         
-        Label(self.treinamento,text='ID:',font=('helvetica',10),fg='black',bg= '#86cee4'  ).grid(row=4, column=0, columnspan=1, padx=10,pady=10)
+        Label(self.treinamento,text='Dados Para Abertura do Data Set:',font=('helvetica',10),fg='black',bg= '#86cee4'  ).grid(row=4, column=0, columnspan=2, padx=10,pady=10)
+        Label(self.treinamento,text='Usuário:',font=('helvetica',10),fg='black',bg= '#86cee4'  ).grid(row=5, column=0, columnspan=1, padx=10,pady=10)
         self.ID=Entry(self.treinamento,font=('helvetica',10),width=2)
-        self.ID.grid(row=5,column=0,padx=20,pady=20)
-        Label(self.treinamento,text='Sessão:',font=('helvetica',10),fg='black',bg= '#86cee4'  ).grid(row=4, column=1, columnspan=1, padx=10,pady=10)
+        self.ID.grid(row=6,column=0,padx=20,pady=20)
+        Label(self.treinamento,text='Sessão:',font=('helvetica',10),fg='black',bg= '#86cee4'  ).grid(row=5, column=1, columnspan=1, padx=10,pady=10)
         self.Sessao=Entry(self.treinamento,font=('helvetica',10),width=2)
-        self.Sessao.grid(row=5,column=1,padx=20,pady=20)
+        self.Sessao.grid(row=6,column=1,padx=20,pady=20)
         
         Button(self.treinamento, text='Abrir EEG Data Set', width=20, bg='#f29cc2',fg='white',command= lambda : AbrirEEG(self.ID.get(),self.Sessao.get())).grid(row=6, column=0,columnspan=2,padx=10,pady=30)
         #Button(self.treinamento, text='Esquerda', width=20, bg='#0404B4',fg='white',command=self.ApenasEsquerda).grid(row=5, column=0,columnspan=1,padx=10,pady=30)

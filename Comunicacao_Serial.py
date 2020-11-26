@@ -63,7 +63,9 @@ class Janela_Comunicacao_Serial():
                 self.SB=USB.read(1)
                 self.SP=self.SB#n pode ler outro byte
                 #print('IF---1')
-                if (self.SB==b'S'):#Verifica start byte
+                
+                #DADOS DO EEG
+                if (self.SB==b'S'):#Verifica start byte->EEG
                     #print(self.SB)
                     
                     #DADOS DO EEG

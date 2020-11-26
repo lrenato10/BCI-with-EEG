@@ -26,7 +26,7 @@ def AbrirEEG(ID,Sessao):
         raw.plot(duration=20, n_channels=3)#duracao da amostra de 150 s e mostra os 3 primeiros canais (EEG)
     
     except:
-        messagebox.showinfo('Erro!', ' ID deve estar entre 1 e 9 \n Sessão deve estar entre 1 e 3')
+        messagebox.showinfo('Erro!', ' Usuário deve estar entre 1 e 9 \n Sessão deve estar entre 1 e 3')
     
     # #%% ==============================================plot a partir de vetor==============================================
     

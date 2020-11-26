@@ -5,7 +5,9 @@ class StripChart:
 
     def __init__(self, root,Y,indices):
         self.gf = self.makeGraph(root)
+        self.gf['bg'] = '#86cee4'
         self.cf = self.makeControls(root)
+        self.cf['bg'] = '#86cee4'
         self.gf.pack()
         self.cf.pack()
         self.Reset()
@@ -14,9 +16,10 @@ class StripChart:
         self.C3=Y[:,:,0]
         self.CZ=Y[:,:,1]
         self.C4=Y[:,:,2]
+        self.Run()#inicia o plot
     def makeGraph(self, frame):
         self.sw = 1000#largura
-        self.h = 300#altura 
+        self.h = 400#altura 
         self.top = 2
         gf = Canvas(frame, width=self.sw, height=self.h+10,
                     bg="#002", bd=0, highlightthickness=0)
@@ -26,11 +29,17 @@ class StripChart:
 
     def makeControls(self, frame):
         cf = Frame(frame, borderwidth=1, relief="raised")
-        Button(cf, text="Run", command=self.Run).grid(column=2, row=2)
-        Button(cf, text="Stop", command=self.Stop).grid(column=4, row=2)
-        Button(cf, text="Reset", command=self.Reset).grid(column=6, row=2)
-        self.fps = Label(cf, text="0 fps")
-        self.fps.grid(column=2, row=4, columnspan=5)
+        #Button(cf, text="Run", command=self.Run).grid(column=2, row=2)
+        #Button(cf, text="Stop", command=self.Stop).grid(column=4, row=2)
+        #Button(cf, text="Reset", command=self.Reset).grid(column=6, row=2)
+        self.fps = Label(cf, text="0 fps",bg='#86cee4')
+        self.fps.grid(column=2, row=1, columnspan=5)
+        self.C3label = Label(cf, text=" C3 ",fg='blue',bg='#86cee4')
+        self.C3label.grid(column=0, row=2, columnspan=1)
+        self.Czlabel = Label(cf, text=" CZ ",fg='red',bg='#86cee4')
+        self.Czlabel.grid(column=3, row=2, columnspan=1)
+        self.C4label = Label(cf, text=" C4 ",fg='yellow',bg='#86cee4')
+        self.C4label.grid(column=5, row=2, columnspan=1)
         return(cf)
 
     def Run(self):
@@ -58,14 +67,14 @@ class StripChart:
         y2 = 0
         tx = time.time()
         while self.go:
-            y1 = self.C3[self.indices[i],j]*1e4#tentativa fixa, percorre apenas o tempo
-            y2 = self.CZ[self.indices[i],j]*1e4
-            y3 = self.C4[self.indices[i],j]*1e4#indices faz percorrer apenas os sinais das tentativas que cairam no teste
+            y1 = self.C3[self.indices[i],j]*1e4/2#tentativa fixa, percorre apenas o tempo
+            y2 = self.CZ[self.indices[i],j]*1e4/2
+            y3 = self.C4[self.indices[i],j]*1e4/2#indices faz percorrer apenas os sinais das tentativas que cairam no teste
             #y1 = self.C3[i,j]*1e4#tentativa fixa, percorre apenas o tempo
             #y2 = self.CZ[i,j]*1e4
             #y3 = self.C4[i,j]*1e4#indices faz percorrer apenas os sinais das tentativas que cairam no teste
             self.scrollstrip(self.gf.p,
-               (0.2+y1, 0.5+y2, 0.8+y3),
+               (0.25+y1, 0.5+y2, 0.75+y3),
                ( '#ff4', '#f40', '#4af'),
                  "" if t % 65 else "#088")
             j+=1#atualiza o tempo

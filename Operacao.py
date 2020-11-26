@@ -19,42 +19,44 @@ class Janela_Operacao():
         self.operacao['bg'] = '#86cee4'
         #GIF do movimento
         self.gif_mov = ImageLabel(self.operacao)
-        self.gif_mov.grid(row=0, column=0, columnspan=2,rowspan=2)
+        self.gif_mov.grid(row=0, column=0, columnspan=2,rowspan=3)
         self.gif_mov.load('Imagens/esquerda.gif',10**8)
         self.Lesquerda=Label(self.operacao, text='Movimento Real',font=('helvetica',20),fg='black',bg= '#86cee4'  )
-        self.Lesquerda.grid(row=2, column=0, columnspan=2, padx=10,pady=10)# posiciona leganda
+        self.Lesquerda.grid(row=3, column=0, columnspan=2, padx=10,pady=10)# posiciona leganda
         #GIF da predicao
         self.gif_pred = ImageLabel(self.operacao)
-        self.gif_pred.grid(row=3, column=0,columnspan=2)
+        self.gif_pred.grid(row=4, column=0,columnspan=2)
         self.gif_pred.load('Imagens/direita.gif',10**8)
         self.Ldireita=Label(self.operacao, text='Predição do Movimento',font=('helvetica',20),fg='black',bg= '#86cee4'  )
-        self.Ldireita.grid(row=4, column=0, columnspan=2, padx=10,pady=10)# posiciona leganda
+        self.Ldireita.grid(row=5, column=0, columnspan=2, padx=10,pady=10)# posiciona leganda
                 
-        self.iniciarB=Button(self.operacao, text='Iniciar', width=20, bg='red',fg='white',command=self.IniciarPredicao)
-        self.iniciarB.grid(row=5, column=0,columnspan=1,padx=10,pady=10)
-        Button(self.operacao, text='Parar', width=20, bg='#f29cc2',fg='white',command=self.PararPredicao).grid(row=5, column=1,columnspan=1,padx=10,pady=10)
+        self.iniciarB=Button(self.operacao, text='Aguardando\nTreinamento', width=20, bg='red',fg='white',command=self.IniciarPredicao)
+        self.iniciarB.grid(row=6, column=0,columnspan=1,padx=10,pady=10)
+        Button(self.operacao, text='Parar', width=20, bg='#f29cc2',fg='white',command=self.PararPredicao).grid(row=6, column=1,columnspan=1,padx=10,pady=10)
         
-        Label(self.operacao, text='Primeiro Sujeito:',font=('helvetica',15),fg='black',bg= '#86cee4'  ).grid(row=0, column=2, columnspan=1, padx=10,pady=10)
+        
+        Label(self.operacao, text='Selecione o intervalo entre os sujeitos\n dos dados de treinamento:',font=('helvetica',15),fg='black',bg= '#86cee4'  ).grid(row=0, column=2, columnspan=2, padx=10,pady=10)
+        Label(self.operacao, text='Primeiro Sujeito:',font=('helvetica',15),fg='black',bg= '#86cee4'  ).grid(row=1, column=2, columnspan=1, padx=10,pady=10)
         self.ID1=Entry(self.operacao,font=('helvetica',15),width=2)
-        self.ID1.grid(row=0,column=3,padx=20,pady=20)
-        Label(self.operacao, text='Último Sujeito:',font=('helvetica',15),fg='black',bg= '#86cee4'  ).grid(row=1, column=2, columnspan=1, padx=10,pady=10)
+        self.ID1.grid(row=1,column=3,padx=20,pady=20)
+        Label(self.operacao, text='Último Sujeito:',font=('helvetica',15),fg='black',bg= '#86cee4'  ).grid(row=2, column=2, columnspan=1, padx=10,pady=10)
         self.ID2=Entry(self.operacao,font=('helvetica',15),width=2)
-        self.ID2.grid(row=1,column=3,padx=20,pady=20)
+        self.ID2.grid(row=2,column=3,padx=20,pady=20)
         
         self.Estado=Label(self.operacao, text='IA Não Treinada',font=('helvetica',20),fg='red',bg= '#86cee4'  )
-        self.Estado.grid(row=2, column=2, columnspan=1, padx=10,pady=10)# posiciona leganda
-        Button(self.operacao, text='Treinar IA', width=20, bg='#f29cc2',fg='white',command=self.IniciarTreinamento).grid(row=2, column=3,columnspan=1,padx=10,pady=10)
+        self.Estado.grid(row=3, column=2, columnspan=1, padx=10,pady=10)# posiciona leganda
+        Button(self.operacao, text='Treinar IA', width=20, bg='#f29cc2',fg='white',command=self.IniciarTreinamento).grid(row=3, column=3,columnspan=1,padx=10,pady=10)
         
         self.led =tk_tools.Led(self.operacao, size=100)
-        self.led.grid(row=3,column=2, columnspan=1)
+        self.led.grid(row=4,column=2, columnspan=1)
         self.led.to_red()
         self.led.to_green(on=False)
         self.led.to_red(on=False)
         
         self.Acertos=Label(self.operacao, text='Taxa de Acerto: 0/0',font=('helvetica',20),fg='black',bg= '#86cee4'  )#contador de acertos
-        self.Acertos.grid(row=3, column=3, columnspan=1, padx=10,pady=10)# posiciona contador de acertos
+        self.Acertos.grid(row=4, column=3, columnspan=1, padx=10,pady=10)# posiciona contador de acertos
         
-        Button(self.operacao, text='Abrir EEG', width=20, bg='#f29cc2',fg='white',command=self.IniciarEEG).grid(row=4, column=2,columnspan=2,padx=10,pady=10)
+        Button(self.operacao, text='Abrir EEG', width=20, bg='#f29cc2',fg='white',command=self.IniciarEEG).grid(row=5, column=2,columnspan=2,padx=10,pady=10)
         
         
     
@@ -77,7 +79,7 @@ class Janela_Operacao():
                 self.Estado['text']='IA Não Treinada'
                 self.Estado['fg']='red'
                 self.iniciarB['bg']='red'
-                self.iniciarB['text']='Iniciar'
+                self.iniciarB['text']='Aguardando\nTreinamento'
                 
             self.threadrunning_train==False
     def IniciarTreinamento(self):
@@ -118,13 +120,13 @@ class Janela_Operacao():
                     
                     
                 count+=1
-                self.Acertos['text']='Taxa de Acerto: {}/{}'.format(acertos,count)
+                self.Acertos['text']='Taxa de Acerto: {}/{}='.format(acertos,count)+format(acertos/count, ".2f")+'%'
                 time.sleep(4)#tempo para imaginacao motora
                 time.sleep(1.5+random.random())
         except:
             messagebox.showinfo('Erro!', 'Treine a IA antes des utiliza-la!')
             self.iniciarB['bg']='red'
-            self.iniciarB['text']='Iniciar'
+            self.iniciarB['text']='Aguardando\nTreinamento'
     
     def IniciarPredicao(self):
         self.threadrunning_gif=True
