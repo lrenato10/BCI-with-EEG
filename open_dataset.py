@@ -120,4 +120,4 @@ def AbrirEEG(ID,Sessao):
     # plt.grid()
     # plt.title(tag_str[teste])
     
-#AbrirEEG()
+#AbrirEEG(3,2)

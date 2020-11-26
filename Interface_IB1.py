@@ -1,12 +1,7 @@
-from gerargif import ImageLabel
-from Classificador.Class_Classifier import MyClassifier#importa o classificar
-from Classificador.Extraindo_Amostras_EEG import DataSetEEG
-from Classificador.BigDataSetEEG import ConcatenateDataSetEEG 
-from Treinamento import Janela_Treinamento
+from Data_Set import Janela_DataSet
 from Instrucoes import Janela_Instrucoes
 from Operacao import Janela_Operacao
 from Comunicacao_Serial import Janela_Comunicacao_Serial
-from open_dataset import AbrirEEG
 from tkinter import*#para toda a interface grafica
 from tkinter import messagebox#para as caixas de mensagem
 from tkinter import ttk#treeview eh um metodo de ttk
@@ -15,7 +10,6 @@ import time
 import PIL as p
 import PIL.ImageTk as ptk
 import random
-from threading import Thread 
 import numpy as np
 
 
@@ -47,7 +41,7 @@ class Janela_Opcoes():
         self.opcoes['bg'] = '#86cee4'
         self.opcoes.resizable(True, True)
         Label(self.opcoes, font=('helvetica',20), text='Selecione uma das opções',fg='white',bg= '#86cee4'  ).grid(row=0, column=0, columnspan=1, padx=10,pady=10) # centraliza o label na coluna
-        Button(self.opcoes, font=('helvetica',15),text='Treinamento',width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='white',command=Janela_Treinamento).grid(row=1, column=0, padx=70, pady=40)#cOres criadas em https://html-color-codes.info/
+        Button(self.opcoes, font=('helvetica',15),text='Data Set',width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='white',command=Janela_DataSet).grid(row=1, column=0, padx=70, pady=40)#cOres criadas em https://html-color-codes.info/
         Button(self.opcoes, font=('helvetica', 15), text='Operação', width=15, height=2, relief=GROOVE ,bg='#f29cc2',fg='white',command=Janela_Operacao).grid(row=2, column=0, padx=70, pady=40)
         Button(self.opcoes, font=('helvetica', 15), text='Conectar Hardware', width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='white',command=Janela_Comunicacao_Serial).grid(row=3, column=0,padx=70,pady=40)
         Button(self.opcoes, font=('helvetica', 15), text='Instruções', width=15, height=2, relief=GROOVE, bg='#f29cc2',fg='white',command=Janela_Instrucoes).grid(row=4, column=0,padx=70,pady=40)

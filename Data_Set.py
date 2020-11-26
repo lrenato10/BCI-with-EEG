@@ -5,7 +5,7 @@ from threading import Thread
 import random
 import time
 
-class Janela_Treinamento():
+class Janela_DataSet():
     def __init__(self):     
         self.treinamento = Toplevel()  # é uma instancia de tk se a janela root for fechada ela tambpem será fechada
         self.treinamento.resizable(False, False) # ampliar a janela
@@ -57,7 +57,7 @@ class Janela_Treinamento():
     def Thread_DataSet(self):
         count=0
         self.IniciarB['bg']='orange'
-        self.IniciarB['text']='Treinando ...'
+        self.IniciarB['text']='Gerando Data Set ...'
         while (count<120 and self.threadrunning):#roda o gif 120 vezes
             mao=random.randint(0,1)
             if (mao==0):#mao esquerda

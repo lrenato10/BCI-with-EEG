@@ -1,6 +1,4 @@
-#from Extraindo_Amostras_EEG import DataSetEEG
 #from BigDataSetEEG import ConcatenateDataSetEEG
-from Classificador.Extraindo_Amostras_EEG import DataSetEEG
 from Classificador.BigDataSetEEG import ConcatenateDataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -13,8 +11,8 @@ from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 from collections import Counter
 
 class MyClassifier():
-    def __init__(self,primeiro_ID=4,ultimo_ID=4): 
-        EEG=ConcatenateDataSetEEG(primeiro_ID,ultimo_ID)#importa o dataset do(primeiro sujeito, ultimo sujeito)
+    def __init__(self,primeiro_ID=4,ultimo_ID=4,Remove_EOG=True): 
+        EEG=ConcatenateDataSetEEG(primeiro_ID,ultimo_ID,Remove_EOG)#importa o dataset do(primeiro sujeito, ultimo sujeito)
         self.label=EEG.Data_Label#rotulos do dataset
         self.E=EEG.Data_bandas#energia dos sinais
         self.E_indice=np.concatenate((self.E,np.transpose([range(len(self.label))])),axis=1)#cria uma coluna extra para identificar cada amostra

@@ -5,7 +5,7 @@ Created on Sun Nov  8 10:38:12 2020
 @author: Luiz Renato
 """
 
-from Extraindo_Amostras_EEG import DataSetEEG
+#from Extraindo_Amostras_EEG import DataSetEEG
 from BigDataSetEEG import ConcatenateDataSetEEG
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -17,7 +17,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
-EEG=ConcatenateDataSetEEG(4,4)#importa o dataset do(primeiro sujeito, ultimo sujeito)
+EEG=ConcatenateDataSetEEG(9,9)#importa o dataset do(primeiro sujeito, ultimo sujeito)
 E=EEG.Data_bandas#energia os sinais
 label=EEG.Data_Label#rotulos do dataset
 
@@ -33,7 +33,7 @@ model=LDA(solver='lsqr',shrinkage='auto', tol=1e-8)
 #gamma => inverso do raio do rbf
 model.fit(X_train,Y_train)#treina o modelo com a SVM
 Y_predict=model.predict(X_test)#passa no modelo para fazer a predicao
-Y_pred_prob=model.predict_proba(X_test)#probabilidade da predicao
+#Y_pred_prob=model.predict_proba(X_test)#probabilidade da predicao
 
 print('Treinamento')
 print(model.score(X_train,Y_train))#ve a acuracaia do treinamento

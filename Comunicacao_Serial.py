@@ -78,7 +78,7 @@ class Janela_Comunicacao_Serial():
                         #print(self.LSB)
                         #transforma em um inteiro a partir de MSB e LSB -> int(MSB<<8+LSB)
                         int16=int.from_bytes(self.MSB+self.LSB,byteorder='big',signed=False)#inteiro de 16 bits positivo com byte mais significativo primeiro
-                        int16A=(int16-((2**16)/2-1))*2
+                        int16A=(int16-((2**16)/2-1))*2#operacao inversa que foi feita pra discretizar o sinal
                         int16A=int16A/(self.resolucao*self.ganho)
                         self.Vc3=np.append(self.Vc3,int16A)#concatena em um vetor coluna
                         #print(int16A)
@@ -92,7 +92,7 @@ class Janela_Comunicacao_Serial():
                         #print(self.LSB)
                         #transforma em um inteiro a partir de MSB e LSB -> int(MSB<<8+LSB)
                         int16=int.from_bytes(self.MSB+self.LSB,byteorder='big',signed=False)#inteiro de 16 bits positivo com byte mais significativo primeiro
-                        int16A=(int16-((2**16)/2-1))*2
+                        int16A=(int16-((2**16)/2-1))*2#operacao inversa que foi feita pra discretizar o sinal
                         int16A=int16A/(self.resolucao*self.ganho)
                         self.Vcz=np.append(self.Vcz,int16A)#concatena em um vetor coluna
                         #print(int16A)
@@ -106,7 +106,7 @@ class Janela_Comunicacao_Serial():
                         #print(self.LSB)
                         #transforma em um inteiro a partir de MSB e LSB -> int(MSB<<8+LSB)
                         int16=int.from_bytes(self.MSB+self.LSB,byteorder='big',signed=False)#inteiro de 16 bits positivo com byte mais significativo primeiro
-                        int16A=(int16-((2**16)/2-1))*2
+                        int16A=(int16-((2**16)/2-1))*2#operacao inversa que foi feita pra discretizar o sinal
                         int16A=int16A/(self.resolucao*self.ganho)
                         self.Vc4=np.append(self.Vc4,int16A)#concatena em um vetor coluna
                         #print(int16A)
