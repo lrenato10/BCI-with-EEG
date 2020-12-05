@@ -17,7 +17,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
-EEG=ConcatenateDataSetEEG(9,9)#importa o dataset do(primeiro sujeito, ultimo sujeito)
+EEG=ConcatenateDataSetEEG(4,4)#importa o dataset do(primeiro sujeito, ultimo sujeito)
 E=EEG.Data_bandas#energia os sinais
 label=EEG.Data_Label#rotulos do dataset
 

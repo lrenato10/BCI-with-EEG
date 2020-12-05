@@ -121,7 +121,7 @@ class Janela_Operacao():
                     
                     
                 count+=1
-                self.Acertos['text']='Taxa de Acerto: {}/{}='.format(acertos,count)+format(acertos/count, ".2f")+'%'
+                self.Acertos['text']='Taxa de Acerto: {}/{}='.format(acertos,count)+format(acertos/count*100, ".2f")+'%'
                 time.sleep(2+random.random())
         except:
             messagebox.showinfo('Erro!', 'Treine a IA antes des utiliza-la!')

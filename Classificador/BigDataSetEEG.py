@@ -4,8 +4,9 @@ Created on Wed Nov 11 15:38:23 2020
 
 @author: Luiz Renato
 """
+#from Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
 from Classificador.Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
-#from Classificador.Extraindo_Amostras_EEG import DataSetEEG
+#from Extraindo_Amostras_EEG import DataSetEEG
 from Classificador.Extraindo_Amostras_EEG import DataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt
