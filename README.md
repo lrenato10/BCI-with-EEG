@@ -1,1 +1,1 @@
-# EEG
+# Brain Computer Interface (BCI-EEG)
