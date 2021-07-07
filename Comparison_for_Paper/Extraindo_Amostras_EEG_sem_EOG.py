@@ -227,43 +227,50 @@ class DataSetEEG_sem_EOG():
                 self.gamma[i,:]=np.sqrt(self.gamma[i,:]/count_g)
                 
                 self.unica[i,:]=np.sqrt(self.unica[i,:]/count_u)
-        
+                
+            if Bands=='AB':
+                self.bandas=np.concatenate((self.alfa,self.beta), axis=1)#concatena na horizontal
+            if Bands=='todas':
+                self.bandas=np.concatenate((self.delta, self.teta, self.alfa, self.beta, self.gamma), axis=1)#concatena na horizontal
+            if Bands=='unica':
+                self.bandas=self.unica
             
-        #Feature Extration by RMS
-        if(Feature==' '):
-            epsilon=2.1e-6#limear para contagem do WAMP
-            self.Dif=np.zeros((N-1,3))
-            self.count_3z4=np.zeros((self.n,3))
-            self.count_3=np.zeros((self.n,1))
-            self.count_z=np.zeros((self.n,1))
-            self.count_4=np.zeros((self.n,1))
-            for i in range(self.n):#percorre todas as tentativas
-                self.X=self.x[i,:]#tempo
-                self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
+        # #Feature Extration by RMS
+        # if(Feature==' '):
+        #     epsilon=2.1e-6#limear para contagem do WAMP
+        #     self.Dif=np.zeros((N-1,3))
+        #     self.count_3z4=np.zeros((self.n,3))
+        #     self.count_3=np.zeros((self.n,1))
+        #     self.count_z=np.zeros((self.n,1))
+        #     self.count_4=np.zeros((self.n,1))
+        #     for i in range(self.n):#percorre todas as tentativas
+        #         self.X=self.x[i,:]#tempo
+        #         self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
                 
-                for t in range(N-1):#percorre o tempo de coleta do sinal
-                    for j in range(3):#percorre os eletrodos c3 cz c4
-                        self.Dif[t,j]=np.abs(self.Y[t+1,j]-self.Y[t,j])#diferença de sinais consecutivos
-                        if (self.Dif[t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
-                            self.Dif[t,j]=1
-                        else:
-                            self.Dif[t,j]=0
-                #conta quantos valores 1 na coluna de cada eletrodo
-                self.count_3[i]=list(self.Dif[:,0]).count(1)
-                self.count_z[i]=list(self.Dif[:,1]).count(1)
-                self.count_4[i]=list(self.Dif[:,2]).count(1)
+        #         for t in range(N-1):#percorre o tempo de coleta do sinal
+        #             for j in range(3):#percorre os eletrodos c3 cz c4
+        #                 self.Dif[t,j]=np.abs(self.Y[t+1,j]-self.Y[t,j])#diferença de sinais consecutivos
+        #                 if (self.Dif[t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
+        #                     self.Dif[t,j]=1
+        #                 else:
+        #                     self.Dif[t,j]=0
+        #         #conta quantos valores 1 na coluna de cada eletrodo
+        #         self.count_3[i]=list(self.Dif[:,0]).count(1)
+        #         self.count_z[i]=list(self.Dif[:,1]).count(1)
+        #         self.count_4[i]=list(self.Dif[:,2]).count(1)
                 
-            self.unica=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
-            self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+        #     self.unica=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+        #     self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
         
-        #Feature Extration by RMS
+        #Feature Extration by WAMP
         if (Feature=='WAMP'):
-            epsilon=2.1e-6#limear para contagem do WAMP
-            self.Dif=np.zeros((N-1,3))
+            epsilon=0.5e-6#limear para contagem do WAMP
+            self.Dif=np.zeros((6,N-1,3))
+            self.count_bandas=np.zeros((self.n,3*6))
             self.count_3z4=np.zeros((self.n,3))
-            self.count_3=np.zeros((self.n,1))
-            self.count_z=np.zeros((self.n,1))
-            self.count_4=np.zeros((self.n,1))
+            self.count_3=np.zeros((self.n,6))
+            self.count_z=np.zeros((self.n,6))
+            self.count_4=np.zeros((self.n,6))
             
             dt=1/250;#tempo discreto
             self.count_alto=0
@@ -289,16 +296,18 @@ class DataSetEEG_sem_EOG():
             self.fhat_u=np.zeros((N,3))
             self.Y_u=np.zeros((N,3))
             
+            self.Y_bandas=np.zeros((6,N,3))
+            
             
             for i in range(self.n):#percorre todas as tentativas
                 self.X=self.x[i,:]#tempo
                 self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
     
                 for j in range(3):# percorre os 3 eletrodos C3 CZ C4
-                    self.fhat[:,j]=np.fft.fft(self.Y[:,j],N)#calcula a FFT (numero imaginario da amplitude e fase dos sin)
+                    self.fhat=np.fft.fft(self.Y[:,j],N)#calcula a FFT (numero imaginario da amplitude e fase dos sin)
+                    #discretiza para as frequencias de 0 até 125 e espelha para o outro lado sem o 0
                     #self.PSD[:,j]=self.fhat*np.conj(self.fhat)/N#calcula o quadrado da amplitude das frequencias
                     self.freq=(1/(self.temp_amostra))*np.arange(N)#calcula as frequencias dos sin
-                    
                     count_d=0
                     count_t=0
                     count_a=0
@@ -308,70 +317,83 @@ class DataSetEEG_sem_EOG():
                     
                     #Separando as ondas pelas bandas de frequencia
                     indices_d=(self.freq>0.5)*(self.freq<4)
-                    self.fhat_d[:,j]=indices_d*self.fhat[:,j]
-                    self.Y_d[:,j]=np.fft.ifft(self.fhat_d[:,j])
+                    self.fhat_d=indices_d*self.fhat
+                    self.Y_d[:,j]=np.fft.ifft(self.fhat_d)*2#multiplica por dois pois elinou o lado espelhado que fazia parte do sinal de interesse
                     
                     indices_t=(self.freq>=4)*(self.freq<8)
-                    self.fhat_t[:,j]=indices_t*self.fhat[:,j]
-                    self.Y_t[:,j]=np.fft.ifft(self.fhat_t[:,j])
+                    self.fhat_t=indices_t*self.fhat
+                    self.Y_t[:,j]=np.fft.ifft(self.fhat_t)*2
                     
                     indices_a=(self.freq>=8)*(self.freq<14)
-                    self.fhat_a[:,j]=indices_a*self.fhat[:,j]
-                    self.Y_a[:,j]=np.fft.ifft(self.fhat_a[:,j])
+                    self.fhat_a=indices_a*self.fhat
+                    self.Y_a[:,j]=np.fft.ifft(self.fhat_a)*2
                     
                     indices_b=(self.freq>=14)*(self.freq<30)
-                    self.fhat_b[:,j]=indices_b*self.fhat[:,j]
-                    self.Y_b[:,j]=np.fft.ifft(self.fhat_b[:,j])
+                    self.fhat_b=indices_b*self.fhat
+                    self.Y_b[:,j]=np.fft.ifft(self.fhat_b)*2
                     
                     indices_g=(self.freq>=30)*(self.freq<100)
-                    self.fhat_g[:,j]=indices_g*self.fhat[:,j]
-                    self.Y_g[:,j]=np.fft.ifft(self.fhat_g[:,j])
+                    self.fhat_g=indices_g*self.fhat
+                    self.Y_g[:,j]=np.fft.ifft(self.fhat_g)*2
                     
-                    indices_u=(self.freq>=0.5)*(self.freq<100)
-                    #self.fhat_u[:,j]=indices_u*self.fhat[:,j]
-                    self.fhat_u[:,j]=self.fhat[:,j]
-                    self.Y_u[:,j]=np.fft.ifft(self.fhat_u[:,j])
+                    indices_u=(self.freq>=0.5)*(self.freq<=40)
+                    self.fhat_u=indices_u*self.fhat
+                    self.Y_u[:,j]=np.fft.ifft(self.fhat_u)*2
+                    
+                #agrupando todas as bandas em uma unica matriz
+                self.Y_bandas[0,:,:]=self.Y_d
+                self.Y_bandas[1,:,:]=self.Y_t
+                self.Y_bandas[2,:,:]=self.Y_a
+                self.Y_bandas[3,:,:]=self.Y_b
+                self.Y_bandas[4,:,:]=self.Y_g
+                self.Y_bandas[5,:,:]=self.Y_u
                 
-            #     for t in range(N-1):#percorre o tempo de coleta do sinal
-            #         for j in range(3):#percorre os eletrodos c3 cz c4
-            #             self.Dif[t,j]=np.abs(self.Y[t+1,j]-self.Y[t,j])#diferença de sinais consecutivos
-            #             if (self.Dif[t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
-            #                 self.Dif[t,j]=1
-            #             else:
-            #                 self.Dif[t,j]=0
-            #     #conta quantos valores 1 na coluna de cada eletrodo
-            #     self.count_3[i]=list(self.Dif[:,0]).count(1)
-            #     self.count_z[i]=list(self.Dif[:,1]).count(1)
-            #     self.count_4[i]=list(self.Dif[:,2]).count(1)
-                
-            # self.unica=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
-            # self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+                for b in range(6):#percorre as bandas d t a b g u
+                    for t in range(N-1):#percorre o tempo de coleta do sinal
+                        for j in range(3):#percorre os eletrodos c3 cz c4
+                            self.Dif[b,t,j]=np.abs(self.Y_bandas[b,t+1,j]-self.Y_bandas[b,t,j])#diferença de sinais consecutivos
+                            if (self.Dif[b,t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
+                                self.Dif[b,t,j]=1
+                            else:
+                                self.Dif[b,t,j]=0
+                    #conta quantos valores 1 na coluna de cada eletrodo
+                    self.count_3[i,b]=list(self.Dif[b,:,0]).count(1)
+                    self.count_z[i,b]=list(self.Dif[b,:,1]).count(1)
+                    self.count_4[i,b]=list(self.Dif[b,:,2]).count(1)
+        
+            #self.unica=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+            self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+            for i in range (6):#ordena as colunas para agrupar os 3 eletrodos juntos por banda
+                for j in range (3):    
+                    self.count_bandas[:,i*3+j]=self.count_3z4[:,i+j*6]
+            #self.count_bandas=np.concatenate((self.count_bandas,self.count_3z4),axis=1)
+    
+            if Bands=='AB':
+                self.bandas=self.count_bandas[:,6:12]#concatena na horizontal
+            if Bands=='todas':
+                self.bandas=self.count_bandas[:,0:15]
+            if Bands=='unica':
+                self.bandas=self.unica[:,15:18]
+        
+        # self.Y_total=self.Y_d+self.Y_t+self.Y_a+self.Y_b+self.Y_g
+        # plt.plot(self.X,self.Y[:,2])
+        # plt.plot(self.X,self.Y_d[:,2])
+        # plt.plot(self.X,self.Y_t[:,2])
+        # plt.plot(self.X,self.Y_a[:,2])
+        # plt.plot(self.X,self.Y_b[:,2])
+        # plt.plot(self.X,self.Y_g[:,2])
+        # plt.plot(self.X,self.Y_total[:,2])
+        # plt.plot(self.X,self.Y_u[:,2])
+        # #self.PSD=self.fhat*np.conj(self.fhat)/N
+        # #plt.plot(self.freq,self.PSD)
+        # #plt.plot(self.X,self.Y_teste[:,2])
         
         
-        
-        
-        if Bands=='AB':
-            self.bandas=np.concatenate((self.alfa,self.beta), axis=1)#concatena na horizontal
-        if Bands=='todas':
-            self.bandas=np.concatenate((self.delta, self.teta, self.alfa, self.beta, self.gamma), axis=1)#concatena na horizontal
-        if Bands=='unica':
-            self.bandas=self.unica
-        
-        self.Y_total=self.Y_d+self.Y_t+self.Y_a+self.Y_b+self.Y_g
-        #plt.plot(self.X,self.Y[:,2])
-        #plt.plot(self.X,self.Y_d[:,1])
-        #plt.plot(self.X,self.Y_t[:,1])
-        #plt.plot(self.X,self.Y_a[:,1])
-        #plt.plot(self.X,self.Y_b[:,1])
-        #plt.plot(self.X,self.Y_g[:,1])
-        #plt.plot(self.X,self.Y_total[:,2])
-        plt.plot(self.X,self.Y_u[:,1])
-        
-        self.fhat_teste=np.fft.fft(self.Y[:,1],N)
-        self.Y_teste=np.fft.ifft(self.fhat_teste)
-        plt.plot(self.X, self.Y_teste)
-        plt.plot(self.X, self.Y[:,1])
+        # self.fhat_teste=np.fft.fft(self.Y[:,1],N)
+        # self.Y_teste=np.fft.ifft(self.fhat_teste)
+        # plt.plot(self.X, self.Y_teste)
+        # plt.plot(self.X, self.Y[:,1])
         
         
     
-D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='unica', Feature='WAMP')
+#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='unica', Feature='WAMP')

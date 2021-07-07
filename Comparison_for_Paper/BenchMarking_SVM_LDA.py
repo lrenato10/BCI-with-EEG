@@ -17,7 +17,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
-EEG=ConcatenateDataSetEEG( ID_inicial=7 , ID_final=7 , Remove_EOG=True, Bands='unica', Feature='WAMP') #Bands ('AB' ou 'todas' ou 'unica')
+EEG=ConcatenateDataSetEEG( ID_inicial=5 , ID_final=5 , Remove_EOG=True, Bands='todas', Feature='WAMP') #Bands ('AB' ou 'todas' ou 'unica')
 E=EEG.Data_bandas#energia os sinais
 label=EEG.Data_Label#rotulos do dataset
 
