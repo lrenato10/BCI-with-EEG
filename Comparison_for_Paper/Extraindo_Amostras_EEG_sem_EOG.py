@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 class DataSetEEG_sem_EOG():
-    def __init__(self,ID=4,N=1, Bands='todas', Feature='WAMP'):#abre o primeiro dataset por default
+    def __init__(self,ID=4,N=1, Bands='todas', Feature='RMS'):#abre o primeiro dataset por default
         #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
         #adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
         adress='D:\Engenharia\Python\BCI-EEG\BCI-with-EEG\Classificador\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(N)+'T.gdf'
@@ -215,7 +215,7 @@ class DataSetEEG_sem_EOG():
                         count_g+=1
                         self.gamma[i,:]=self.gamma[i,:]+self.RMS[k,:]
                         
-                    if self.freq[k]<40:#para uma faixa ampla de frequencia
+                    if (self.freq[k]>=0.5) and (self.freq[k]<40):#para uma faixa ampla de frequencia
                         count_u+=1
                         self.unica[i,:]=self.unica[i,:]+self.RMS[k,:]
                 
@@ -227,10 +227,16 @@ class DataSetEEG_sem_EOG():
                 self.gamma[i,:]=np.sqrt(self.gamma[i,:]/count_g)
                 
                 self.unica[i,:]=np.sqrt(self.unica[i,:]/count_u)
+        
             
-        if(Feature=='WAMP'):
+        #Feature Extration by RMS
+        if(Feature==' '):
+            epsilon=2.1e-6#limear para contagem do WAMP
             self.Dif=np.zeros((N-1,3))
-            epsilon=2e-6#limear para contagem do WAMP
+            self.count_3z4=np.zeros((self.n,3))
+            self.count_3=np.zeros((self.n,1))
+            self.count_z=np.zeros((self.n,1))
+            self.count_4=np.zeros((self.n,1))
             for i in range(self.n):#percorre todas as tentativas
                 self.X=self.x[i,:]#tempo
                 self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
@@ -243,12 +249,105 @@ class DataSetEEG_sem_EOG():
                         else:
                             self.Dif[t,j]=0
                 #conta quantos valores 1 na coluna de cada eletrodo
-                self.count_3=list(self.Dif[:,0]).count(1)
-                self.count_z=list(self.Dif[:,1]).count(1)
-                self.count_4=list(self.Dif[:,2]).count(1)
+                self.count_3[i]=list(self.Dif[:,0]).count(1)
+                self.count_z[i]=list(self.Dif[:,1]).count(1)
+                self.count_4[i]=list(self.Dif[:,2]).count(1)
                 
+            self.unica=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+            self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+        
+        #Feature Extration by RMS
+        if (Feature=='WAMP'):
+            epsilon=2.1e-6#limear para contagem do WAMP
+            self.Dif=np.zeros((N-1,3))
+            self.count_3z4=np.zeros((self.n,3))
+            self.count_3=np.zeros((self.n,1))
+            self.count_z=np.zeros((self.n,1))
+            self.count_4=np.zeros((self.n,1))
+            
+            dt=1/250;#tempo discreto
+            self.count_alto=0
+            self.bandas=np.zeros((self.n,9))
+            self.teta=np.zeros((self.n,3))
+            self.alfa=np.zeros((self.n,3))
+            self.delta=np.zeros((self.n,3))
+            self.beta=np.zeros((self.n,3))
+            self.gamma=np.zeros((self.n,3))
+            self.unica=np.zeros((self.n,3))
+            
+            self.fhat=np.zeros((N,3))
+            self.fhat_d=np.zeros((N,3))
+            self.Y_d=np.zeros((N,3))
+            self.fhat_t=np.zeros((N,3))
+            self.Y_t=np.zeros((N,3))
+            self.fhat_a=np.zeros((N,3))
+            self.Y_a=np.zeros((N,3))
+            self.fhat_b=np.zeros((N,3))
+            self.Y_b=np.zeros((N,3))
+            self.fhat_g=np.zeros((N,3))
+            self.Y_g=np.zeros((N,3))
+            self.fhat_u=np.zeros((N,3))
+            self.Y_u=np.zeros((N,3))
+            
+            
+            for i in range(self.n):#percorre todas as tentativas
+                self.X=self.x[i,:]#tempo
+                self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
+    
+                for j in range(3):# percorre os 3 eletrodos C3 CZ C4
+                    self.fhat[:,j]=np.fft.fft(self.Y[:,j],N)#calcula a FFT (numero imaginario da amplitude e fase dos sin)
+                    #self.PSD[:,j]=self.fhat*np.conj(self.fhat)/N#calcula o quadrado da amplitude das frequencias
+                    self.freq=(1/(self.temp_amostra))*np.arange(N)#calcula as frequencias dos sin
                     
-                        
+                    count_d=0
+                    count_t=0
+                    count_a=0
+                    count_b=0
+                    count_g=0
+                    count_u=0
+                    
+                    #Separando as ondas pelas bandas de frequencia
+                    indices_d=(self.freq>0.5)*(self.freq<4)
+                    self.fhat_d[:,j]=indices_d*self.fhat[:,j]
+                    self.Y_d[:,j]=np.fft.ifft(self.fhat_d[:,j])
+                    
+                    indices_t=(self.freq>=4)*(self.freq<8)
+                    self.fhat_t[:,j]=indices_t*self.fhat[:,j]
+                    self.Y_t[:,j]=np.fft.ifft(self.fhat_t[:,j])
+                    
+                    indices_a=(self.freq>=8)*(self.freq<14)
+                    self.fhat_a[:,j]=indices_a*self.fhat[:,j]
+                    self.Y_a[:,j]=np.fft.ifft(self.fhat_a[:,j])
+                    
+                    indices_b=(self.freq>=14)*(self.freq<30)
+                    self.fhat_b[:,j]=indices_b*self.fhat[:,j]
+                    self.Y_b[:,j]=np.fft.ifft(self.fhat_b[:,j])
+                    
+                    indices_g=(self.freq>=30)*(self.freq<100)
+                    self.fhat_g[:,j]=indices_g*self.fhat[:,j]
+                    self.Y_g[:,j]=np.fft.ifft(self.fhat_g[:,j])
+                    
+                    indices_u=(self.freq>=0.5)*(self.freq<100)
+                    #self.fhat_u[:,j]=indices_u*self.fhat[:,j]
+                    self.fhat_u[:,j]=self.fhat[:,j]
+                    self.Y_u[:,j]=np.fft.ifft(self.fhat_u[:,j])
+                
+            #     for t in range(N-1):#percorre o tempo de coleta do sinal
+            #         for j in range(3):#percorre os eletrodos c3 cz c4
+            #             self.Dif[t,j]=np.abs(self.Y[t+1,j]-self.Y[t,j])#diferença de sinais consecutivos
+            #             if (self.Dif[t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
+            #                 self.Dif[t,j]=1
+            #             else:
+            #                 self.Dif[t,j]=0
+            #     #conta quantos valores 1 na coluna de cada eletrodo
+            #     self.count_3[i]=list(self.Dif[:,0]).count(1)
+            #     self.count_z[i]=list(self.Dif[:,1]).count(1)
+            #     self.count_4[i]=list(self.Dif[:,2]).count(1)
+                
+            # self.unica=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+            # self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+        
+        
         
         
         if Bands=='AB':
@@ -258,5 +357,21 @@ class DataSetEEG_sem_EOG():
         if Bands=='unica':
             self.bandas=self.unica
         
+        self.Y_total=self.Y_d+self.Y_t+self.Y_a+self.Y_b+self.Y_g
+        #plt.plot(self.X,self.Y[:,2])
+        #plt.plot(self.X,self.Y_d[:,1])
+        #plt.plot(self.X,self.Y_t[:,1])
+        #plt.plot(self.X,self.Y_a[:,1])
+        #plt.plot(self.X,self.Y_b[:,1])
+        #plt.plot(self.X,self.Y_g[:,1])
+        #plt.plot(self.X,self.Y_total[:,2])
+        plt.plot(self.X,self.Y_u[:,1])
+        
+        self.fhat_teste=np.fft.fft(self.Y[:,1],N)
+        self.Y_teste=np.fft.ifft(self.fhat_teste)
+        plt.plot(self.X, self.Y_teste)
+        plt.plot(self.X, self.Y[:,1])
+        
+        
     
-D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='todas', Feature='RMS')
+D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='unica', Feature='WAMP')

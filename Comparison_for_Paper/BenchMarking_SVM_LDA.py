@@ -17,7 +17,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
-EEG=ConcatenateDataSetEEG( ID_inicial=1 , ID_final=9 , Remove_EOG=True, Bands='AB', Feature='RMS') #Bands ('AB' ou 'todas' ou 'unica')
+EEG=ConcatenateDataSetEEG( ID_inicial=7 , ID_final=7 , Remove_EOG=True, Bands='unica', Feature='WAMP') #Bands ('AB' ou 'todas' ou 'unica')
 E=EEG.Data_bandas#energia os sinais
 label=EEG.Data_Label#rotulos do dataset
 
@@ -27,10 +27,10 @@ scores_test=[]
 #%% ===================================================treinar a SVM====================================================
 for i in range(50):
     X_train, X_test, Y_train, Y_test = train_test_split(E,label,test_size=0.3)#separa dados de treinamento e validacao com 20% de validacao
-    model=LDA(solver='lsqr',shrinkage='auto', tol=1e-8)
+    #model=LDA(solver='lsqr',shrinkage='auto', tol=1e-8)
     #model=LDA(solver='svd', tol=1e-8)
     #model=QDA()
-    #model=SVC(kernel='rbf',degree=3,C=1, tol=1e-5,gamma='scale',cache_size=20000)#chama o modelo como um classificador de vetores de suporte
+    model=SVC(kernel='rbf',degree=3,C=1, tol=1e-5,gamma='scale',cache_size=20000)#chama o modelo como um classificador de vetores de suporte
     #C grande reduz a margem, kernel altera o formato do hiperplano
     #C=>inverso da margem
     #gamma => inverso do raio do rbf
