@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 class DataSetEEG_sem_EOG():
-    def __init__(self,ID=4,N=1, Bands='todos'):#abre o primeiro dataset por default
+    def __init__(self,ID=4,N=1, Bands='todas', Feature='WAMP'):#abre o primeiro dataset por default
         #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
         #adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
         adress='D:\Engenharia\Python\BCI-EEG\BCI-with-EEG\Classificador\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(N)+'T.gdf'
@@ -164,71 +164,93 @@ class DataSetEEG_sem_EOG():
         
         
         
-        #CALCULO POR RMS
-        
-        #calculo da energia
-        dt=1/250;#tempo discreto
-        self.sinal_alto=np.array([])
-        self.count_alto=0
-        self.RMS=np.zeros((N,3))
-        self.bandas=np.zeros((self.n,9))
-        self.teta=np.zeros((self.n,3))
-        self.alfa=np.zeros((self.n,3))
-        self.delta=np.zeros((self.n,3))
-        self.beta=np.zeros((self.n,3))
-        self.gamma=np.zeros((self.n,3))
-        self.unica=np.zeros((self.n,3))
-        
-        for i in range(self.n):#percorre todas as tentativas
-            self.X=self.x[i,:]#tempo
-            self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
-
-            if np.max(np.abs(self.Y))>30e-6:#pega as tentativas com sinal com alto valor -> pode ser movimento ocular
-                    self.sinal_alto=np.concatenate((self.sinal_alto, [i]), axis=0)#concatena na vertical
-                    self.count_alto+=1
-            for j in range(3):# percorre os 3 eletrodos C3 CZ C4
-                self.fhat=np.fft.fft(self.Y[:,j],N)#calcula a FFT (numero imaginario da amplitude e fase dos sin)
-                self.RMS[:,j]=np.real(self.fhat)*np.real(self.fhat)#calcula o quadrado da amplitude das frequencias
-                self.freq=(1/(self.temp_amostra))*np.arange(N)#calcula as frequencias dos sin
-                
-            count_d=0
-            count_t=0
-            count_a=0
-            count_b=0
-            count_g=0
-            count_u=0
+        #Feature Extration by RMS
+        if (Feature=='RMS'):
+            #calculo da energia
+            dt=1/250;#tempo discreto
+            self.sinal_alto=np.array([])
+            self.count_alto=0
+            self.RMS=np.zeros((N,3))
+            self.bandas=np.zeros((self.n,9))
+            self.teta=np.zeros((self.n,3))
+            self.alfa=np.zeros((self.n,3))
+            self.delta=np.zeros((self.n,3))
+            self.beta=np.zeros((self.n,3))
+            self.gamma=np.zeros((self.n,3))
+            self.unica=np.zeros((self.n,3))
             
-            for k in range(self.temp_amostra*250):
-                if (self.freq[k]>0.5) and (self.freq[k]<4):#delta
-                    count_d+=1 
-                    self.delta[i,:]=self.delta[i,:]+self.RMS[k,:]
-                if (self.freq[k]>=4) and (self.freq[k]<8):#teta
-                    count_t+=1
-                    self.teta[i,:]=self.teta[i,:]+self.RMS[k,:]
-                if (self.freq[k]>=8) and (self.freq[k] <14):#alfa
-                    count_a+=1
-                    self.alfa[i,:]=self.alfa[i,:]+self.RMS[k,:]
-                if (self.freq[k]>=14) and (self.freq[k] <30):#beta
-                    count_b+=1
-                    self.beta[i,:]=self.beta[i,:]+self.RMS[k,:]
-                if (self.freq[k]>=30) and (self.freq[k]<100):#gamma
-                    count_g+=1
-                    self.gamma[i,:]=self.gamma[i,:]+self.RMS[k,:]
+            for i in range(self.n):#percorre todas as tentativas
+                self.X=self.x[i,:]#tempo
+                self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
+    
+                if np.max(np.abs(self.Y))>30e-6:#pega as tentativas com sinal com alto valor -> pode ser movimento ocular
+                        self.sinal_alto=np.concatenate((self.sinal_alto, [i]), axis=0)#concatena na vertical
+                        self.count_alto+=1
+                for j in range(3):# percorre os 3 eletrodos C3 CZ C4
+                    self.fhat=np.fft.fft(self.Y[:,j],N)#calcula a FFT (numero imaginario da amplitude e fase dos sin)
+                    self.RMS[:,j]=np.real(self.fhat)*np.real(self.fhat)#calcula o quadrado da amplitude das frequencias
+                    self.freq=(1/(self.temp_amostra))*np.arange(N)#calcula as frequencias dos sin
                     
-                if self.freq[k]<40:#para uma faixa ampla de frequencia
-                    count_u+=1
-                    self.unica[i,:]=self.unica[i,:]+self.RMS[k,:]
+                count_d=0
+                count_t=0
+                count_a=0
+                count_b=0
+                count_g=0
+                count_u=0
+                
+                for k in range(self.temp_amostra*250):
+                    if (self.freq[k]>0.5) and (self.freq[k]<4):#delta
+                        count_d+=1 
+                        self.delta[i,:]=self.delta[i,:]+self.RMS[k,:]
+                    if (self.freq[k]>=4) and (self.freq[k]<8):#teta
+                        count_t+=1
+                        self.teta[i,:]=self.teta[i,:]+self.RMS[k,:]
+                    if (self.freq[k]>=8) and (self.freq[k] <14):#alfa
+                        count_a+=1
+                        self.alfa[i,:]=self.alfa[i,:]+self.RMS[k,:]
+                    if (self.freq[k]>=14) and (self.freq[k] <30):#beta
+                        count_b+=1
+                        self.beta[i,:]=self.beta[i,:]+self.RMS[k,:]
+                    if (self.freq[k]>=30) and (self.freq[k]<100):#gamma
+                        count_g+=1
+                        self.gamma[i,:]=self.gamma[i,:]+self.RMS[k,:]
+                        
+                    if self.freq[k]<40:#para uma faixa ampla de frequencia
+                        count_u+=1
+                        self.unica[i,:]=self.unica[i,:]+self.RMS[k,:]
+                
+                #Finaliza calculo do RMS para cada eletrodos por coleta
+                self.delta[i,:]=np.sqrt(self.delta[i,:]/count_d)
+                self.teta[i,:]=np.sqrt(self.teta[i,:]/count_t)
+                self.alfa[i,:]=np.sqrt(self.alfa[i,:]/count_a)
+                self.beta[i,:]=np.sqrt(self.beta[i,:]/count_b)
+                self.gamma[i,:]=np.sqrt(self.gamma[i,:]/count_g)
+                
+                self.unica[i,:]=np.sqrt(self.unica[i,:]/count_u)
             
-            #Finaliza calculo do RMS para cada eletrodos por coleta
-            self.delta[i,:]=np.sqrt(self.delta[i,:]/count_d)
-            self.teta[i,:]=np.sqrt(self.teta[i,:]/count_t)
-            self.alfa[i,:]=np.sqrt(self.alfa[i,:]/count_a)
-            self.beta[i,:]=np.sqrt(self.beta[i,:]/count_b)
-            self.gamma[i,:]=np.sqrt(self.gamma[i,:]/count_g)
-            
-            self.unica[i,:]=np.sqrt(self.unica[i,:]/count_u)
-            
-
+        if(Feature=='WAMP'):
+            self.Dif=np.zeros((N-1,3))
+            epsilon=2e-6#limear para contagem do WAMP
+            for i in range(self.n):#percorre todas as tentativas
+                self.X=self.x[i,:]#tempo
+                self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
+                
+                for t in range(N-1):#percorre o tempo de coleta do sinal
+                    for j in range(3):#percorre os eletrodos c3 cz c4
+                        self.Dif[t,j]=np.abs(self.Y[t+1,j]-self.Y[t,j])#diferença de sinais consecutivos
+                        if (self.Dif[t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
+                            self.Dif[t,j]=1
+                        else:
+                            self.Dif[t,j]=0
+                #conta quantos valores 1 na coluna de cada eletrodo
+                self.count_3=list(self.Dif[:,0]).count(1)
+                self.count_z=list(self.Dif[:,1]).count(1)
+                self.count_4=list(self.Dif[:,2]).count(1)
+                
+                    
+                        
+        
+        
         if Bands=='AB':
             self.bandas=np.concatenate((self.alfa,self.beta), axis=1)#concatena na horizontal
         if Bands=='todas':
@@ -237,4 +259,4 @@ class DataSetEEG_sem_EOG():
             self.bandas=self.unica
         
     
-#D=DataSetEEG_sem_EOG(2,1)
+D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='todas', Feature='RMS')
