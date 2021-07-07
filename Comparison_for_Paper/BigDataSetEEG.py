@@ -4,10 +4,10 @@ Created on Wed Nov 11 15:38:23 2020
 
 @author: Luiz Renato
 """
-#from Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
-from Classificador.Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
-#from Extraindo_Amostras_EEG import DataSetEEG
-from Classificador.Extraindo_Amostras_EEG import DataSetEEG 
+from Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
+#from Classificador.Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
+from Extraindo_Amostras_EEG import DataSetEEG
+#from Classificador.Extraindo_Amostras_EEG import DataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split#separa os dados de treinamento e valicadao
@@ -17,25 +17,33 @@ import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
 class ConcatenateDataSetEEG():
-    def __init__(self,ID_inicial=4,ID_final=4,Remove_EOG=True):#pega apenas para o primeiro sujeito
+    def __init__(self,ID_inicial=4,ID_final=4,Remove_EOG=True, Bands='todas'):#pega apenas para o primeiro sujeito
         Data1=[]
         Data2=[]
         if Remove_EOG==True:#remove o EOG
-            self.Base=DataSetEEG_sem_EOG(ID_inicial,1)#sinal sem EOG
+            self.Base=DataSetEEG_sem_EOG(ID_inicial, 1, Bands)#sinal sem EOG
         else:#nao retira o EOG
-            self.Base=DataSetEEG(ID_inicial,1)#sinal sem EEG cru
+            self.Base=DataSetEEG(ID_inicial, 1, Bands)#sinal sem EEG cru
         
         self.Data_Label=np.zeros((0))
-        self.Data_bandas=np.zeros((0,6))
+        
+        if Bands=='AB':
+            self.Data_bandas=np.zeros((0,2*3))
+        if Bands=='todas':
+            self.Data_bandas=np.zeros((0,5*3))
+        if Bands=='unica':
+            self.Data_bandas=np.zeros((0,1*3))
+        
+        
         self.EEG_Signal=np.zeros((0,250*self.Base.temp_amostra,3))#tentativa, valores coletados no tempo da amostra, eletrodos C3 CZ C4
         for i in range(ID_final-ID_inicial+1):
             #extrai os dados do usuario de ID i
             if Remove_EOG==True:#remove o EOG
-                self.Data1=DataSetEEG_sem_EOG(i+ID_inicial,1)
-                self.Data2=DataSetEEG_sem_EOG(i+ID_inicial,2)    
+                self.Data1=DataSetEEG_sem_EOG(i+ID_inicial,1, Bands)
+                self.Data2=DataSetEEG_sem_EOG(i+ID_inicial,2, Bands)    
             else:#nao retira o EOG
-                self.Data1=DataSetEEG(i+ID_inicial,1)
-                self.Data2=DataSetEEG(i+ID_inicial,2)    
+                self.Data1=DataSetEEG(i+ID_inicial,1, Bands)
+                self.Data2=DataSetEEG(i+ID_inicial,2, Bands)    
             
     
             #concatena os dados do usuario de ID i

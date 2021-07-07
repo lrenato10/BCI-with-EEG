@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 class DataSetEEG_sem_EOG():
-    def __init__(self,ID=4,N=1):#abre o primeiro dataset por default
+    def __init__(self,ID=4,N=1, Bands='todos'):#abre o primeiro dataset por default
         #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
         #adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
-        adress='D:\Engenharia\Python\IB1 EEG\EEG\Classificador\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(N)+'T.gdf'
+        adress='D:\Engenharia\Python\BCI-EEG\BCI-with-EEG\Classificador\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(N)+'T.gdf'
         #print(adress)
         raw=mne.io.read_raw_gdf(adress)
         #raw.info['bads'] = ['EOG:ch01','EOG:ch02','EOG:ch03']#retira os sinais EOG
@@ -162,17 +162,23 @@ class DataSetEEG_sem_EOG():
         if ID==1:
             self.y_eeg_sem_EOG=self.y
         
+        
+        
+        #CALCULO POR RMS
+        
         #calculo da energia
         dt=1/250;#tempo discreto
         self.sinal_alto=np.array([])
         self.count_alto=0
-        self.PSD=np.zeros((N,3))
+        self.RMS=np.zeros((N,3))
         self.bandas=np.zeros((self.n,9))
         self.teta=np.zeros((self.n,3))
         self.alfa=np.zeros((self.n,3))
         self.delta=np.zeros((self.n,3))
         self.beta=np.zeros((self.n,3))
         self.gamma=np.zeros((self.n,3))
+        self.unica=np.zeros((self.n,3))
+        
         for i in range(self.n):#percorre todas as tentativas
             self.X=self.x[i,:]#tempo
             self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
@@ -182,28 +188,53 @@ class DataSetEEG_sem_EOG():
                     self.count_alto+=1
             for j in range(3):# percorre os 3 eletrodos C3 CZ C4
                 self.fhat=np.fft.fft(self.Y[:,j],N)#calcula a FFT (numero imaginario da amplitude e fase dos sin)
-                self.PSD[:,j]=self.fhat*np.conj(self.fhat)/N#calcula a densidade espectral
+                self.RMS[:,j]=np.real(self.fhat)*np.real(self.fhat)#calcula o quadrado da amplitude das frequencias
                 self.freq=(1/(self.temp_amostra))*np.arange(N)#calcula as frequencias dos sin
-                L=np.arange(1,np.floor(N/5),dtype='int')#pega metade das frequencias mais baixas
-                for k in range(self.temp_amostra*250):
-                    if (self.freq[k]>0.5) and (self.freq[k]<4):#delta
-                        self.delta[i,:]=self.delta[i,:]+self.PSD[k,:]
-                    if (self.freq[k]>=4) and (self.freq[k]<8):#teta
-                        self.teta[i,:]=self.teta[i,:]+self.PSD[k,:]
-                    if (self.freq[k]>=8) and (self.freq[k] <14):#alfa
-                        self.alfa[i,:]=self.alfa[i,:]+self.PSD[k,:]
-                    if (self.freq[k]>=14) and (self.freq[k] <30):#beta
-                        self.beta[i,:]=self.beta[i,:]+self.PSD[k,:]
-                    if (self.freq[k]>=30) and (self.freq[k]<100):#gamma
-                        self.gamma[i,:]=self.gamma[i,:]+self.PSD[k,:]
-                #plt.plot(self.freq[L],self.PSD[L,j])
-                #plt.xlim(self.freq[L[0]],self.freq[L[-1]])
                 
-        self.bandas=np.concatenate((self.alfa,self.beta), axis=1)#concatena na horizontal
+            count_d=0
+            count_t=0
+            count_a=0
+            count_b=0
+            count_g=0
+            count_u=0
+            
+            for k in range(self.temp_amostra*250):
+                if (self.freq[k]>0.5) and (self.freq[k]<4):#delta
+                    count_d+=1 
+                    self.delta[i,:]=self.delta[i,:]+self.RMS[k,:]
+                if (self.freq[k]>=4) and (self.freq[k]<8):#teta
+                    count_t+=1
+                    self.teta[i,:]=self.teta[i,:]+self.RMS[k,:]
+                if (self.freq[k]>=8) and (self.freq[k] <14):#alfa
+                    count_a+=1
+                    self.alfa[i,:]=self.alfa[i,:]+self.RMS[k,:]
+                if (self.freq[k]>=14) and (self.freq[k] <30):#beta
+                    count_b+=1
+                    self.beta[i,:]=self.beta[i,:]+self.RMS[k,:]
+                if (self.freq[k]>=30) and (self.freq[k]<100):#gamma
+                    count_g+=1
+                    self.gamma[i,:]=self.gamma[i,:]+self.RMS[k,:]
+                    
+                if self.freq[k]<40:#para uma faixa ampla de frequencia
+                    count_u+=1
+                    self.unica[i,:]=self.unica[i,:]+self.RMS[k,:]
+            
+            #Finaliza calculo do RMS para cada eletrodos por coleta
+            self.delta[i,:]=np.sqrt(self.delta[i,:]/count_d)
+            self.teta[i,:]=np.sqrt(self.teta[i,:]/count_t)
+            self.alfa[i,:]=np.sqrt(self.alfa[i,:]/count_a)
+            self.beta[i,:]=np.sqrt(self.beta[i,:]/count_b)
+            self.gamma[i,:]=np.sqrt(self.gamma[i,:]/count_g)
+            
+            self.unica[i,:]=np.sqrt(self.unica[i,:]/count_u)
+            
+
+        if Bands=='AB':
+            self.bandas=np.concatenate((self.alfa,self.beta), axis=1)#concatena na horizontal
+        if Bands=='todas':
+            self.bandas=np.concatenate((self.delta, self.teta, self.alfa, self.beta, self.gamma), axis=1)#concatena na horizontal
+        if Bands=='unica':
+            self.bandas=self.unica
         
-        #joga fora os sinais com valores elevados
-        #self.bandas=np.delete(self.bandas,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
-        #self.label=np.delete(self.label,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
-        #self.y_eeg_sem_EOG=np.delete(self.y_eeg_sem_EOG,self.sinal_alto.astype(int),0)#retira os sinais com maiores valor
     
-D=DataSetEEG_sem_EOG(2,1)
+#D=DataSetEEG_sem_EOG(2,1)
