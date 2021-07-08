@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 class DataSetEEG_sem_EOG():
-    def __init__(self,ID=4,N=1, Bands='todas', Feature='RMS'):#abre o primeiro dataset por default
+    def __init__(self,ID=4,N=1, Bands='AB', Feature='WAMP'):#abre o primeiro dataset por default
         #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
         #adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
         adress='D:\Engenharia\Python\BCI-EEG\BCI-with-EEG\Classificador\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(N)+'T.gdf'
@@ -235,36 +235,14 @@ class DataSetEEG_sem_EOG():
             if Bands=='unica':
                 self.bandas=self.unica
             
-        # #Feature Extration by RMS
-        # if(Feature==' '):
-        #     epsilon=2.1e-6#limear para contagem do WAMP
-        #     self.Dif=np.zeros((N-1,3))
-        #     self.count_3z4=np.zeros((self.n,3))
-        #     self.count_3=np.zeros((self.n,1))
-        #     self.count_z=np.zeros((self.n,1))
-        #     self.count_4=np.zeros((self.n,1))
-        #     for i in range(self.n):#percorre todas as tentativas
-        #         self.X=self.x[i,:]#tempo
-        #         self.Y=self.y_eeg_sem_EOG[i,:,:]#eletrodo c3 cz c4 no tempo
-                
-        #         for t in range(N-1):#percorre o tempo de coleta do sinal
-        #             for j in range(3):#percorre os eletrodos c3 cz c4
-        #                 self.Dif[t,j]=np.abs(self.Y[t+1,j]-self.Y[t,j])#diferença de sinais consecutivos
-        #                 if (self.Dif[t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
-        #                     self.Dif[t,j]=1
-        #                 else:
-        #                     self.Dif[t,j]=0
-        #         #conta quantos valores 1 na coluna de cada eletrodo
-        #         self.count_3[i]=list(self.Dif[:,0]).count(1)
-        #         self.count_z[i]=list(self.Dif[:,1]).count(1)
-        #         self.count_4[i]=list(self.Dif[:,2]).count(1)
-                
-        #     self.unica=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
-        #     self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
-        
+
         #Feature Extration by WAMP
         if (Feature=='WAMP'):
-            epsilon=0.5e-6#limear para contagem do WAMP
+            if (Bands=='unica'):
+                epsilon=2.4e-6#limear para contagem do WAMP
+            else:
+                epsilon=0.55e-6#limear para contagem do WAMP
+            
             self.Dif=np.zeros((6,N-1,3))
             self.count_bandas=np.zeros((self.n,3*6))
             self.count_3z4=np.zeros((self.n,3))
@@ -373,7 +351,7 @@ class DataSetEEG_sem_EOG():
             if Bands=='todas':
                 self.bandas=self.count_bandas[:,0:15]
             if Bands=='unica':
-                self.bandas=self.unica[:,15:18]
+                self.bandas=self.count_bandas[:,15:18]
         
         # self.Y_total=self.Y_d+self.Y_t+self.Y_a+self.Y_b+self.Y_g
         # plt.plot(self.X,self.Y[:,2])
@@ -396,4 +374,4 @@ class DataSetEEG_sem_EOG():
         
         
     
-#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='unica', Feature='WAMP')
+D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='unica', Feature='WAMP')

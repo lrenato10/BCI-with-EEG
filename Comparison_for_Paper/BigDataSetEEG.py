@@ -17,7 +17,7 @@ import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
 class ConcatenateDataSetEEG():
-    def __init__(self,ID_inicial=4,ID_final=4,Remove_EOG=True, Bands='todas', Feature='RMS'):#pega apenas para o primeiro sujeito
+    def __init__(self,ID_inicial=4,ID_final=4,Remove_EOG=True, Bands='AB', Feature='WAMP'):#pega apenas para o primeiro sujeito
         Data1=[]
         Data2=[]
         if Remove_EOG==True:#remove o EOG
