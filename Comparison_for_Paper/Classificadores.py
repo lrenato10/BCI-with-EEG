@@ -16,8 +16,9 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA #imp
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
+from mpl_toolkits.mplot3d import Axes3D
 
-EEG=ConcatenateDataSetEEG( ID_inicial=5 , ID_final=5 , Remove_EOG=True, Bands='todas') #Bands ('AB' ou 'todas' ou 'unica')
+EEG=ConcatenateDataSetEEG( ID_inicial=4 , ID_final=4 , Remove_EOG=True, Bands='todas', Feature='WAMP') #Bands ('AB' ou 'todas' ou 'unica')
 E=EEG.Data_bandas#energia os sinais
 label=EEG.Data_Label#rotulos do dataset
 
@@ -53,4 +54,6 @@ for axi, i in zip(ax, range(0,6,3)):
     
     #axi.legend(test,'Val')
     #axi.legend((train,test),('Treinamento','Validação'))
+
+#%%=============================================3d plot===============
 

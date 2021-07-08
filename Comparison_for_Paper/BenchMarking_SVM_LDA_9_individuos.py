@@ -30,7 +30,7 @@ media_test_SVM=np.zeros(9)
 std_test_SVM=np.zeros(9)
 
 for i in range(1,10):
-    EEG=ConcatenateDataSetEEG( ID_inicial=i , ID_final=i , Remove_EOG=True, Bands='unica', Feature='WAMP') #Bands ('AB' ou 'todas' ou 'unica')
+    EEG=ConcatenateDataSetEEG( ID_inicial=i , ID_final=i , Remove_EOG=True, Bands='todas', Feature='WAMP') #Bands ('AB' ou 'todas' ou 'unica')
     E=EEG.Data_bandas#energia os sinais
     label=EEG.Data_Label#rotulos do dataset
     
