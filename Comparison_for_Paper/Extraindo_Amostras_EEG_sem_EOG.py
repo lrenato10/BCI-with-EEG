@@ -171,11 +171,17 @@ class DataSetEEG_sem_EOG():
             epsilon=0.55e-6#limear para contagem do WAMP
         
         self.Dif=np.zeros((6,N-1,3))
-        self.count_bandas=np.zeros((self.n,3*6))
+        if (Feature=='duplo'):
+            self.count_bandas=np.zeros((self.n,6*6))
+        else:
+            self.count_bandas=np.zeros((self.n,3*6))
         self.count_3z4=np.zeros((self.n,3))
         self.count_3=np.zeros((self.n,6))
         self.count_z=np.zeros((self.n,6))
         self.count_4=np.zeros((self.n,6))
+        self.count_3d=np.zeros((self.n,6))
+        self.count_zd=np.zeros((self.n,6))
+        self.count_4d=np.zeros((self.n,6))
         
         dt=1/250;#tempo discreto
         self.count_alto=0
@@ -277,20 +283,53 @@ class DataSetEEG_sem_EOG():
                     self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]))/N)
                     self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]))/N)
                     
+            if (Feature=='duplo'):
+                for b in range(6):#percorre as bandas d t a b g u
+                    for t in range(N-1):#percorre o tempo de coleta do sinal
+                        for j in range(3):#percorre os eletrodos c3 cz c4
+                            self.Dif[b,t,j]=np.abs(self.Y_bandas[b,t+1,j]-self.Y_bandas[b,t,j])#diferença de sinais consecutivos
+                            if (self.Dif[b,t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
+                                self.Dif[b,t,j]=1
+                            else:
+                                self.Dif[b,t,j]=0
+                    #conta quantos valores 1 na coluna de cada eletrodo
+                    self.count_3d[i,b]=list(self.Dif[b,:,0]).count(1)
+                    self.count_zd[i,b]=list(self.Dif[b,:,1]).count(1)
+                    self.count_4d[i,b]=list(self.Dif[b,:,2]).count(1)
+                    self.count_3[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,0]*self.Y_bandas[b,:,0]))/N)
+                    self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]*self.Y_bandas[b,:,1]))/N)
+                    self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]*self.Y_bandas[b,:,2]))/N)
+                    
             #===================End of Calculations============================
         
-        self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
-        for i in range (6):#ordena as colunas para agrupar os 3 eletrodos juntos por banda
-            for j in range (3):    
-                self.count_bandas[:,i*3+j]=self.count_3z4[:,i+j*6]
-        #self.count_bandas=np.concatenate((self.count_bandas,self.count_3z4),axis=1)
-
-        if Bands=='AB':
-            self.bandas=self.count_bandas[:,6:12]#extrai da coluna 6 a 11
-        if Bands=='todas':
-            self.bandas=self.count_bandas[:,0:15]
-        if Bands=='unica':
-            self.bandas=self.count_bandas[:,15:18]
+        if (Feature=='duplo'):
+            self.count_3z4=np.concatenate((self.count_3,self.count_3d,self.count_z,self.count_zd,self.count_4,self.count_4d),axis=1)
+            for i in range (6):#ordena as colunas para agrupar os 3 eletrodos juntos por banda
+                for j in range (6):    
+                    self.count_bandas[:,i*6+j]=self.count_3z4[:,i+j*6]
+                
+            #self.count_bandas=np.concatenate((self.count_bandas,self.count_3z4),axis=1)
+    
+            if Bands=='AB':
+                self.bandas=self.count_bandas[:,12:24]#extrai da coluna 12 a 23
+            if Bands=='todas':
+                self.bandas=self.count_bandas[:,0:30]
+            if Bands=='unica':
+                self.bandas=self.count_bandas[:,30:36]
+        else:    
+        
+            self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
+            for i in range (6):#ordena as colunas para agrupar os 3 eletrodos juntos por banda
+                for j in range (3):    
+                    self.count_bandas[:,i*3+j]=self.count_3z4[:,i+j*6]
+            #self.count_bandas=np.concatenate((self.count_bandas,self.count_3z4),axis=1)
+    
+            if Bands=='AB':
+                self.bandas=self.count_bandas[:,6:12]#extrai da coluna 6 a 11
+            if Bands=='todas':
+                self.bandas=self.count_bandas[:,0:15]
+            if Bands=='unica':
+                self.bandas=self.count_bandas[:,15:18]
         
         # self.Y_total=self.Y_d+self.Y_t+self.Y_a+self.Y_b+self.Y_g
         # plt.plot(self.X,self.Y[:,2])
@@ -311,6 +350,4 @@ class DataSetEEG_sem_EOG():
         # plt.plot(self.X, self.Y_teste)
         # plt.plot(self.X, self.Y[:,1])
         
-        
-    
-#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB', Feature='WAMP')
+#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB', Feature='duplo')
