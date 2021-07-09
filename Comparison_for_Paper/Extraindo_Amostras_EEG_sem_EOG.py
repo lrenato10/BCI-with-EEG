@@ -248,6 +248,7 @@ class DataSetEEG_sem_EOG():
                 self.Y_g[:,j]=np.fft.ifft(self.fhat_g)*2
                 
                 indices_u=(self.freq>=0.5)*(self.freq<=40)
+                #indices_u=(self.freq>=8)*(self.freq<=30)
                 self.fhat_u=indices_u*self.fhat
                 self.Y_u[:,j]=np.fft.ifft(self.fhat_u)*2
                 
@@ -278,11 +279,30 @@ class DataSetEEG_sem_EOG():
             if (Feature=='RMS'):
                 self.Y_bandas=self.Y_bandas*self.Y_bandas#eleva todos os termos ao quadrado
     
-                for b in range(6):#percorre as bandas B calculando o RMS de cada uma
+                for b in range(6):#percorre as bandas B calculando o RMS de cada uma   
                     self.count_3[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,0]))/N)
                     self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]))/N)
                     self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]))/N)
-                    
+            
+            if (Feature=='RMS3'):
+                self.Y_bandas=np.abs(self.Y_bandas*self.Y_bandas*self.Y_bandas)#eleva todos os termos ao quadrado
+    
+                for b in range(6):#percorre as bandas B calculando o RMS de cada uma   
+                    self.count_3[i,b]=np.cbrt((np.sum(self.Y_bandas[b,:,0]))/N)
+                    self.count_z[i,b]=np.cbrt((np.sum(self.Y_bandas[b,:,1]))/N)
+                    self.count_4[i,b]=np.cbrt((np.sum(self.Y_bandas[b,:,2]))/N)
+            
+            if (Feature=='PSD'):
+                
+                for b in range(6):#percorre as bandas B calculando o RMS de cada uma
+                    self.fhat_3=np.fft.fft(self.Y_bandas[b,:,0],N)
+                    self.count_3[i,b]=np.sum(self.fhat_3*np.conj(self.fhat_3)/N)#calcula a densidade espectral
+                    self.fhat_z=np.fft.fft(self.Y_bandas[b,:,1],N)
+                    self.count_z[i,b]=np.sum(self.fhat_z*np.conj(self.fhat_z)/N)#calcula a densidade espectral
+                    self.fhat_4=np.fft.fft(self.Y_bandas[b,:,2],N)
+                    self.count_4[i,b]=np.sum(self.fhat_4*np.conj(self.fhat_4)/N)#calcula a densidade espectral
+
+                
             if (Feature=='duplo'):
                 for b in range(6):#percorre as bandas d t a b g u
                     for t in range(N-1):#percorre o tempo de coleta do sinal
@@ -303,6 +323,10 @@ class DataSetEEG_sem_EOG():
             #===================End of Calculations============================
         
         if (Feature=='duplo'):
+            self.count_3=self.count_3*np.average(self.count_3d)/np.average(self.count_3)#normaliza os dados do RMS com o WAMP
+            self.count_z=self.count_z*np.average(self.count_zd)/np.average(self.count_z)
+            self.count_4=self.count_4*np.average(self.count_4d)/np.average(self.count_4)
+            
             self.count_3z4=np.concatenate((self.count_3,self.count_3d,self.count_z,self.count_zd,self.count_4,self.count_4d),axis=1)
             for i in range (6):#ordena as colunas para agrupar os 3 eletrodos juntos por banda
                 for j in range (6):    
@@ -331,6 +355,7 @@ class DataSetEEG_sem_EOG():
             if Bands=='unica':
                 self.bandas=self.count_bandas[:,15:18]
         
+        
         # self.Y_total=self.Y_d+self.Y_t+self.Y_a+self.Y_b+self.Y_g
         # plt.plot(self.X,self.Y[:,2])
         # plt.plot(self.X,self.Y_d[:,2])
@@ -340,14 +365,9 @@ class DataSetEEG_sem_EOG():
         # plt.plot(self.X,self.Y_g[:,2])
         # plt.plot(self.X,self.Y_total[:,2])
         # plt.plot(self.X,self.Y_u[:,2])
-        # #self.PSD=self.fhat*np.conj(self.fhat)/N
-        # #plt.plot(self.freq,self.PSD)
-        # #plt.plot(self.X,self.Y_teste[:,2])
+        
+        # plt.plot(self.freq,self.PSD)
+        # plt.plot(self.X,self.Y_teste[:,2])
         
         
-        # self.fhat_teste=np.fft.fft(self.Y[:,1],N)
-        # self.Y_teste=np.fft.ifft(self.fhat_teste)
-        # plt.plot(self.X, self.Y_teste)
-        # plt.plot(self.X, self.Y[:,1])
-        
-#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB', Feature='duplo')
+D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB', Feature='PSD')
