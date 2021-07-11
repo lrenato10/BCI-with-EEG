@@ -259,7 +259,7 @@ class DataSetEEG_sem_EOG():
             
             
             #=======================Feature Extraction Calculation=============
-            if (Feature=='WAMP'):
+            if (Feature=='WAMP'):#Willison Amplitude
                 for b in range(6):#percorre as bandas d t a b g u
                     for t in range(N-1):#percorre o tempo de coleta do sinal
                         for j in range(3):#percorre os eletrodos c3 cz c4
@@ -273,7 +273,7 @@ class DataSetEEG_sem_EOG():
                     self.count_z[i,b]=list(self.Dif[b,:,1]).count(1)
                     self.count_4[i,b]=list(self.Dif[b,:,2]).count(1)
                     
-            if (Feature=='RMS'):
+            if (Feature=='RMS'):#Root Mean Square
                 self.Y_bandas=self.Y_bandas*self.Y_bandas#eleva todos os termos ao quadrado
     
                 for b in range(6):#percorre as bandas B calculando o RMS de cada uma   
@@ -281,15 +281,29 @@ class DataSetEEG_sem_EOG():
                     self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]))/N)
                     self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]))/N)
             
-            if (Feature=='RMS3'):
-                self.Y_bandas=np.abs(self.Y_bandas*self.Y_bandas*self.Y_bandas)#eleva todos os termos ao quadrado
-    
-                for b in range(6):#percorre as bandas B calculando o RMS de cada uma   
-                    self.count_3[i,b]=np.cbrt((np.sum(self.Y_bandas[b,:,0]))/N)
-                    self.count_z[i,b]=np.cbrt((np.sum(self.Y_bandas[b,:,1]))/N)
-                    self.count_4[i,b]=np.cbrt((np.sum(self.Y_bandas[b,:,2]))/N)
+            if (Feature=='NE'):#Nonlinear Energy
+                for b in range(6):#percorre as bandas d t a b g u
+                    for t in range(N-2):#percorre o tempo de coleta do sinal
+                        for j in range(3):#percorre os eletrodos c3 cz c4
+                            self.Dif[b,t,j]=self.Y_bandas[b,t+1,j]*self.Y_bandas[b,t+1,j]-self.Y_bandas[b,t+2,j]*self.Y_bandas[b,t,j]
+                            
+                    #conta quantos valores 1 na coluna de cada eletrodo
+                    self.count_3[i,b]=np.sum(self.Dif[b,:,0])
+                    self.count_z[i,b]=np.sum(self.Dif[b,:,1])
+                    self.count_4[i,b]=np.sum(self.Dif[b,:,2])
+                    
+            if (Feature=='LL'):#Line Length
+                for b in range(6):#percorre as bandas d t a b g u
+                    for t in range(N-1):#percorre o tempo de coleta do sinal
+                        for j in range(3):#percorre os eletrodos c3 cz c4
+                            self.Dif[b,t,j]=np.abs(self.Y_bandas[b,t+1,j]*self.Y_bandas[b,t,j])
+                            
+                    #conta quantos valores 1 na coluna de cada eletrodo
+                    self.count_3[i,b]=np.sum(self.Dif[b,:,0])
+                    self.count_z[i,b]=np.sum(self.Dif[b,:,1])
+                    self.count_4[i,b]=np.sum(self.Dif[b,:,2])
             
-            if (Feature=='PSD'):
+            if (Feature=='PSD'):#Power Spectral Density
                 
                 for b in range(6):#percorre as bandas B calculando o RMS de cada uma
                     self.fhat_3=np.fft.fft(self.Y_bandas[b,:,0],N)
