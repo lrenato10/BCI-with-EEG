@@ -6,8 +6,6 @@ Created on Wed Nov 11 15:38:23 2020
 """
 from Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
 #from Classificador.Extraindo_Amostras_EEG_sem_EOG import DataSetEEG_sem_EOG
-from Extraindo_Amostras_EEG import DataSetEEG
-#from Classificador.Extraindo_Amostras_EEG import DataSetEEG 
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.model_selection import train_test_split#separa os dados de treinamento e valicadao
@@ -20,10 +18,9 @@ class ConcatenateDataSetEEG():
     def __init__(self,ID_inicial=4,ID_final=4,Remove_EOG=True, Bands='AB', Feature='WAMP'):#pega apenas para o primeiro sujeito
         Data1=[]
         Data2=[]
-        if Remove_EOG==True:#remove o EOG
-            self.Base=DataSetEEG_sem_EOG(ID_inicial, 1, Bands, Feature)#sinal sem EOG
-        else:#nao retira o EOG
-            self.Base=DataSetEEG(ID_inicial, 1, Bands, Feature)#sinal sem EEG cru
+        
+        #chama o dataset
+        self.Base=DataSetEEG_sem_EOG(ID_inicial, 1, Remove_EOG, Bands, Feature)#sinal sem EOG
         
         self.Data_Label=np.zeros((0))
         
@@ -47,13 +44,8 @@ class ConcatenateDataSetEEG():
         self.EEG_Signal=np.zeros((0,250*self.Base.temp_amostra,3))#tentativa, valores coletados no tempo da amostra, eletrodos C3 CZ C4
         for i in range(ID_final-ID_inicial+1):
             #extrai os dados do usuario de ID i
-            if Remove_EOG==True:#remove o EOG
-                self.Data1=DataSetEEG_sem_EOG(i+ID_inicial,1, Bands, Feature)
-                self.Data2=DataSetEEG_sem_EOG(i+ID_inicial,2, Bands, Feature)    
-            else:#nao retira o EOG
-                self.Data1=DataSetEEG(i+ID_inicial,1, Bands, Feature)
-                self.Data2=DataSetEEG(i+ID_inicial,2, Bands, Feature)    
-            
+            self.Data1=DataSetEEG_sem_EOG(i+ID_inicial,1, Remove_EOG, Bands, Feature)
+            self.Data2=DataSetEEG_sem_EOG(i+ID_inicial,2, Remove_EOG, Bands, Feature)    
     
             #concatena os dados do usuario de ID i
             self.Data12_label=np.concatenate((self.Data1.label, self.Data2.label), axis=0)#concatena na vertical

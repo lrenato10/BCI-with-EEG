@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 class DataSetEEG_sem_EOG():
-    def __init__(self,ID=4,N=1, Bands='AB', Feature='WAMP'):#abre o primeiro dataset por default
+    def __init__(self,ID=4,N=1, Remove_EOG=True, Bands='AB', Feature='WAMP'):#abre o primeiro dataset por default
         #raw=mne.io.read_raw_gdf('DataSet/BCICIV_2b_gdf/B0101T.gdf')
         #adress='DataSet/BCICIV_2b_gdf/B0'+str(ID)+'0'+str(N)+'T.gdf'
         adress='D:\Engenharia\Python\BCI-EEG\BCI-with-EEG\Classificador\DataSet\BCICIV_2b_gdf\B0'+str(ID)+'0'+str(N)+'T.gdf'
@@ -129,39 +129,42 @@ class DataSetEEG_sem_EOG():
                 self.y_eog[i]=eog_chans[0].T#matriz dos vetores EOG
         
         #DADOS PARA CALIBRACAO EOG
-        for eog in range(eog):
-            start_stop_seconds = np.array([self.inicioEOG[eog], self.fimEOG[eog]])#tempo inicial e final
-            start_sample, stop_sample = (start_stop_seconds * sampling_freq).astype(int)
-            megs_chans_EOG = raw[ch_names[0:3], start_sample:stop_sample]#pega os tres primeiros canais entre os intantes definidos (EEG)
+        if (Remove_EOG==True):#se quiser tirar o ruido do EOG
+            for eog in range(eog):
+                start_stop_seconds = np.array([self.inicioEOG[eog], self.fimEOG[eog]])#tempo inicial e final
+                start_sample, stop_sample = (start_stop_seconds * sampling_freq).astype(int)
+                megs_chans_EOG = raw[ch_names[0:3], start_sample:stop_sample]#pega os tres primeiros canais entre os intantes definidos (EEG)
+                
+                if ID!=1:
+                    eog_chans_EOG= raw[ch_names[3:6], start_sample:stop_sample]#pega os tres ultimos canais (EOG)
+                    self.x_EOG=np.concatenate((self.x_EOG, megs_chans_EOG[1]), axis=0)#concatena na vertical
+                    self.y_EOG=np.concatenate((self.y_EOG, megs_chans_EOG[0].T), axis=0)#concatena na vertical
+                    self.y_eog_EOG=np.concatenate((self.y_eog_EOG, eog_chans_EOG[0].T), axis=0)#concatena na vertical
+                #self.x_EOG[i] = megs_chans[1]#tempo
+                #self.y_EOG[i] = megs_chans[0].T#matriz dos vetores EEG
+                #self.y_eog_EOG[i]=eog_chans[0].T#matriz dos vetores EOG    
             
             if ID!=1:
-                eog_chans_EOG= raw[ch_names[3:6], start_sample:stop_sample]#pega os tres ultimos canais (EOG)
-                self.x_EOG=np.concatenate((self.x_EOG, megs_chans_EOG[1]), axis=0)#concatena na vertical
-                self.y_EOG=np.concatenate((self.y_EOG, megs_chans_EOG[0].T), axis=0)#concatena na vertical
-                self.y_eog_EOG=np.concatenate((self.y_eog_EOG, eog_chans_EOG[0].T), axis=0)#concatena na vertical
-            #self.x_EOG[i] = megs_chans[1]#tempo
-            #self.y_EOG[i] = megs_chans[0].T#matriz dos vetores EEG
-            #self.y_eog_EOG[i]=eog_chans[0].T#matriz dos vetores EOG    
-        
-        if ID!=1:
-            #converte para leitura bipolar
-            bip = np.array([[1, -1, 0], [0, -1, 1]])#matriz que vai converter leitura do eletrodo monopolar em bipolar 
-            self.y_eog_EOG_bip = (bip @ self.y_eog_EOG.T).T#converte para leitura bipolar
-            for tentativa in range(self.n):
-                self.y_eog_bip[tentativa,:,:] = (bip @ self.y_eog[tentativa,:,:].T).T#converte para leitura bipolar
+                #converte para leitura bipolar
+                bip = np.array([[1, -1, 0], [0, -1, 1]])#matriz que vai converter leitura do eletrodo monopolar em bipolar 
+                self.y_eog_EOG_bip = (bip @ self.y_eog_EOG.T).T#converte para leitura bipolar
+                for tentativa in range(self.n):
+                    self.y_eog_bip[tentativa,:,:] = (bip @ self.y_eog[tentativa,:,:].T).T#converte para leitura bipolar
+                
+                #calcula a matriz dos coeficientes da regressao
+                #self.b_bip = np.linalg.solve(self.y_eog_EOG_bip.T @ self.y_eog_EOG_bip, self.y_eog_EOG_bip.T @ self.y_EOG)#coeficiente para bipolar
+                self.b = np.linalg.solve(self.y_eog_EOG.T @ self.y_eog_EOG, self.y_eog_EOG.T @ self.y_EOG)#coeficiente para unipolar
+                
+                #CALCULA NOVO EEG sem o EOG
+                for tentativa in range(self.n):
+                    #self.y_eeg_sem_EOG[tentativa,:,:]=(self.y[tentativa,:,:] - self.y_eog_bip[tentativa,:,:] @ self.b_bip)#EEG corrigido pelo EOG bipolar
+                    self.y_eeg_sem_EOG[tentativa,:,:]=(self.y[tentativa,:,:] - self.y_eog[tentativa,:,:] @ self.b)#EEG corrigido pelo EOG unipolar
             
-            #calcula a matriz dos coeficientes da regressao
-            #self.b_bip = np.linalg.solve(self.y_eog_EOG_bip.T @ self.y_eog_EOG_bip, self.y_eog_EOG_bip.T @ self.y_EOG)#coeficiente para bipolar
-            self.b = np.linalg.solve(self.y_eog_EOG.T @ self.y_eog_EOG, self.y_eog_EOG.T @ self.y_EOG)#coeficiente para unipolar
-            
-            #CALCULA NOVO EEG sem o EOG
-            for tentativa in range(self.n):
-                #self.y_eeg_sem_EOG[tentativa,:,:]=(self.y[tentativa,:,:] - self.y_eog_bip[tentativa,:,:] @ self.b_bip)#EEG corrigido pelo EOG bipolar
-                self.y_eeg_sem_EOG[tentativa,:,:]=(self.y[tentativa,:,:] - self.y_eog[tentativa,:,:] @ self.b)#EEG corrigido pelo EOG unipolar
+            if ID==1:
+                self.y_eeg_sem_EOG=self.y
         
-        if ID==1:
+        else:#nao tira o ruido do EOG
             self.y_eeg_sem_EOG=self.y
-        
         
         #========================FEATURE EXTRACTION============================
         
@@ -219,12 +222,6 @@ class DataSetEEG_sem_EOG():
                 #discretiza para as frequencias de 0 até 125 e espelha para o outro lado sem o 0
                 #self.PSD[:,j]=self.fhat*np.conj(self.fhat)/N#calcula o quadrado da amplitude das frequencias
                 self.freq=(1/(self.temp_amostra))*np.arange(N)#calcula as frequencias dos sin
-                count_d=0
-                count_t=0
-                count_a=0
-                count_b=0
-                count_g=0
-                count_u=0
                 
                 #Separando as ondas pelas bandas de frequencia
                 indices_d=(self.freq>0.5)*(self.freq<4)
@@ -370,4 +367,4 @@ class DataSetEEG_sem_EOG():
         # plt.plot(self.X,self.Y_teste[:,2])
         
         
-D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB', Feature='PSD')
+#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB', Feature='PSD')
