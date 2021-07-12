@@ -274,7 +274,8 @@ class DataSetEEG_sem_EOG():
                     self.Y_g[:,j]=np.fft.ifft(self.fhat_g)*2
                     
                     #indices_u=(self.freq>=0.5)*(self.freq<=40)
-                    indices_u=(self.freq>=8)*(self.freq<=30)
+                    #indices_u=(self.freq>=8)*(self.freq<=30)
+                    indices_u=(self.freq>0.5)*(self.freq<=100)
                     self.fhat_u=indices_u*self.fhat
                     self.Y_u[:,j]=np.fft.ifft(self.fhat_u)*2
                 
@@ -303,6 +304,12 @@ class DataSetEEG_sem_EOG():
                     self.count_z[i,b]=list(self.Dif[b,:,1]).count(1)
                     self.count_4[i,b]=list(self.Dif[b,:,2]).count(1)
                     
+            if (Feature=='MAV'):#Mean Absolute Value
+                for b in range(6):#percorre as bandas B calculando o RMS de cada uma   
+                    self.count_3[i,b]=np.average(np.abs(self.Y_bandas[b,:,0]))
+                    self.count_z[i,b]=np.average(np.abs(self.Y_bandas[b,:,1]))
+                    self.count_4[i,b]=np.average(np.abs(self.Y_bandas[b,:,2]))
+            
             if (Feature=='RMS'):#Root Mean Square
                 self.Y_bandas=self.Y_bandas*self.Y_bandas#eleva todos os termos ao quadrado
     
@@ -344,7 +351,7 @@ class DataSetEEG_sem_EOG():
                     self.count_4[i,b]=np.sum(self.fhat_4*np.conj(self.fhat_4)/N)#calcula a densidade espectral
 
                 
-            if (Feature=='duplo'):
+            if (Feature=='duplo'):#WAMP+NE
                 for b in range(6):#percorre as bandas d t a b g u
                     for t in range(N-1):#percorre o tempo de coleta do sinal
                         for j in range(3):#percorre os eletrodos c3 cz c4

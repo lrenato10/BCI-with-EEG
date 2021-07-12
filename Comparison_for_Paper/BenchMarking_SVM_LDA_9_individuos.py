@@ -29,8 +29,8 @@ std_train_SVM=np.zeros(9)
 media_test_SVM=np.zeros(9)
 std_test_SVM=np.zeros(9)
 
-for i in range(1,10):
-    EEG=ConcatenateDataSetEEG( ID_inicial=i , ID_final=i , Remove_EOG=True, Bands='unica', Feature='LL') #Bands ('AB', 'A','B', 'AB/', 'todas' ou 'unica') Feature ('WAMP', 'RMS', 'duplo','NE' , 'LL' ou 'PSD')
+for i in range(1,10):#passa pelos individuos
+    EEG=ConcatenateDataSetEEG( ID_inicial=i , ID_final=i , Remove_EOG=True, Bands='AB/', Feature='duplo') #Bands ('AB', 'A','B', 'AB/', 'todas' ou 'unica') Feature ('WAMP', 'RMS', 'duplo','NE' , 'LL' ou 'PSD')
     E=EEG.Data_bandas#energia os sinais
     label=EEG.Data_Label#rotulos do dataset
     
@@ -79,3 +79,9 @@ for i in range(1,10):
     std_train_SVM[i-1]=np.std(scores_train_SVM)*100
     media_test_SVM[i-1]=np.average(scores_test_SVM)*100
     std_test_SVM[i-1]=np.std(scores_test_SVM)*100
+    
+feature_media_LDA=np.average(media_test_LDA)
+feature_std_LDA=np.std(media_test_LDA)
+
+feature_media_SVM=np.average(media_test_SVM)
+feature_std_SVM=np.std(media_test_SVM)
