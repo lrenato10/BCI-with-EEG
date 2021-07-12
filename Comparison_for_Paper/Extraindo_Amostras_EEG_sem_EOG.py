@@ -174,6 +174,7 @@ class DataSetEEG_sem_EOG():
             epsilon=0.55e-6#limear para contagem do WAMP
         
         self.Dif=np.zeros((6,N-1,3))
+        self.aux=np.zeros((6,N,3))
         if (Feature=='duplo'):
             self.count_bandas=np.zeros((self.n,6*6))
         else:
@@ -223,31 +224,60 @@ class DataSetEEG_sem_EOG():
                 #self.PSD[:,j]=self.fhat*np.conj(self.fhat)/N#calcula o quadrado da amplitude das frequencias
                 self.freq=(1/(self.temp_amostra))*np.arange(N)#calcula as frequencias dos sin
                 
+                
+                #Discretizando banda alfa e beta
+                if Bands=='AB/':
+                    indices_d=(self.freq>8)*(self.freq<11)
+                    self.fhat_d=indices_d*self.fhat
+                    self.Y_d[:,j]=np.fft.ifft(self.fhat_d)*2#multiplica por dois pois elinou o lado espelhado que fazia parte do sinal de interesse
+                    
+                    indices_t=(self.freq>=11)*(self.freq<14)
+                    self.fhat_t=indices_t*self.fhat
+                    self.Y_t[:,j]=np.fft.ifft(self.fhat_t)*2
+                    
+                    indices_a=(self.freq>=14)*(self.freq<18)
+                    self.fhat_a=indices_a*self.fhat
+                    self.Y_a[:,j]=np.fft.ifft(self.fhat_a)*2
+                    
+                    indices_b=(self.freq>=18)*(self.freq<22)
+                    self.fhat_b=indices_b*self.fhat
+                    self.Y_b[:,j]=np.fft.ifft(self.fhat_b)*2
+                    
+                    indices_g=(self.freq>=22)*(self.freq<26)
+                    self.fhat_g=indices_g*self.fhat
+                    self.Y_g[:,j]=np.fft.ifft(self.fhat_g)*2
+                    
+                    indices_u=(self.freq>=26)*(self.freq<=30)
+                    self.fhat_u=indices_u*self.fhat
+                    self.Y_u[:,j]=np.fft.ifft(self.fhat_u)*2
+                
                 #Separando as ondas pelas bandas de frequencia
-                indices_d=(self.freq>0.5)*(self.freq<4)
-                self.fhat_d=indices_d*self.fhat
-                self.Y_d[:,j]=np.fft.ifft(self.fhat_d)*2#multiplica por dois pois elinou o lado espelhado que fazia parte do sinal de interesse
+                else:
+                    indices_d=(self.freq>0.5)*(self.freq<4)
+                    self.fhat_d=indices_d*self.fhat
+                    self.Y_d[:,j]=np.fft.ifft(self.fhat_d)*2#multiplica por dois pois elinou o lado espelhado que fazia parte do sinal de interesse
+                    
+                    indices_t=(self.freq>=4)*(self.freq<8)
+                    self.fhat_t=indices_t*self.fhat
+                    self.Y_t[:,j]=np.fft.ifft(self.fhat_t)*2
+                    
+                    indices_a=(self.freq>=8)*(self.freq<14)
+                    self.fhat_a=indices_a*self.fhat
+                    self.Y_a[:,j]=np.fft.ifft(self.fhat_a)*2
+                    
+                    indices_b=(self.freq>=14)*(self.freq<30)
+                    self.fhat_b=indices_b*self.fhat
+                    self.Y_b[:,j]=np.fft.ifft(self.fhat_b)*2
+                    
+                    indices_g=(self.freq>=30)*(self.freq<100)
+                    self.fhat_g=indices_g*self.fhat
+                    self.Y_g[:,j]=np.fft.ifft(self.fhat_g)*2
+                    
+                    #indices_u=(self.freq>=0.5)*(self.freq<=40)
+                    indices_u=(self.freq>=8)*(self.freq<=30)
+                    self.fhat_u=indices_u*self.fhat
+                    self.Y_u[:,j]=np.fft.ifft(self.fhat_u)*2
                 
-                indices_t=(self.freq>=4)*(self.freq<8)
-                self.fhat_t=indices_t*self.fhat
-                self.Y_t[:,j]=np.fft.ifft(self.fhat_t)*2
-                
-                indices_a=(self.freq>=8)*(self.freq<14)
-                self.fhat_a=indices_a*self.fhat
-                self.Y_a[:,j]=np.fft.ifft(self.fhat_a)*2
-                
-                indices_b=(self.freq>=14)*(self.freq<30)
-                self.fhat_b=indices_b*self.fhat
-                self.Y_b[:,j]=np.fft.ifft(self.fhat_b)*2
-                
-                indices_g=(self.freq>=30)*(self.freq<100)
-                self.fhat_g=indices_g*self.fhat
-                self.Y_g[:,j]=np.fft.ifft(self.fhat_g)*2
-                
-                indices_u=(self.freq>=0.5)*(self.freq<=40)
-                #indices_u=(self.freq>=8)*(self.freq<=30)
-                self.fhat_u=indices_u*self.fhat
-                self.Y_u[:,j]=np.fft.ifft(self.fhat_u)*2
                 
             #agrupando todas as bandas em uma unica matriz
             self.Y_bandas[0,:,:]=self.Y_d
@@ -323,13 +353,21 @@ class DataSetEEG_sem_EOG():
                                 self.Dif[b,t,j]=1
                             else:
                                 self.Dif[b,t,j]=0
+                    for t in range(N-2):#percorre o tempo de coleta do sinal
+                        for j in range(3):#percorre os eletrodos c3 cz c4
+                            self.aux[b,t,j]=self.Y_bandas[b,t+1,j]*self.Y_bandas[b,t+1,j]-self.Y_bandas[b,t+2,j]*self.Y_bandas[b,t,j]
+                    
                     #conta quantos valores 1 na coluna de cada eletrodo
                     self.count_3d[i,b]=list(self.Dif[b,:,0]).count(1)
                     self.count_zd[i,b]=list(self.Dif[b,:,1]).count(1)
                     self.count_4d[i,b]=list(self.Dif[b,:,2]).count(1)
-                    self.count_3[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,0]*self.Y_bandas[b,:,0]))/N)
-                    self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]*self.Y_bandas[b,:,1]))/N)
-                    self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]*self.Y_bandas[b,:,2]))/N)
+                    # self.count_3[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,0]*self.Y_bandas[b,:,0]))/N)
+                    # self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]*self.Y_bandas[b,:,1]))/N)
+                    # self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]*self.Y_bandas[b,:,2]))/N)
+                    self.count_3[i,b]=np.sum(self.aux[b,:,0])
+                    self.count_z[i,b]=np.sum(self.aux[b,:,1])
+                    self.count_4[i,b]=np.sum(self.aux[b,:,2])
+            
                     
             #===================End of Calculations============================
         
@@ -345,12 +383,18 @@ class DataSetEEG_sem_EOG():
                 
             #self.count_bandas=np.concatenate((self.count_bandas,self.count_3z4),axis=1)
     
+            if Bands=='A':
+                self.bandas=self.count_bandas[:,12:18]
+            if Bands=='B':
+                self.bandas=self.count_bandas[:,18:24]
             if Bands=='AB':
                 self.bandas=self.count_bandas[:,12:24]#extrai da coluna 12 a 23
             if Bands=='todas':
                 self.bandas=self.count_bandas[:,0:30]
             if Bands=='unica':
                 self.bandas=self.count_bandas[:,30:36]
+            if Bands=='AB/':
+                self.bandas=self.count_bandas
         else:    
         
             self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
@@ -359,12 +403,18 @@ class DataSetEEG_sem_EOG():
                     self.count_bandas[:,i*3+j]=self.count_3z4[:,i+j*6]
             #self.count_bandas=np.concatenate((self.count_bandas,self.count_3z4),axis=1)
     
+            if Bands=='A':
+                self.bandas=self.count_bandas[:,6:9]
+            if Bands=='B':
+                self.bandas=self.count_bandas[:,9:12]
             if Bands=='AB':
                 self.bandas=self.count_bandas[:,6:12]#extrai da coluna 6 a 11
             if Bands=='todas':
                 self.bandas=self.count_bandas[:,0:15]
             if Bands=='unica':
                 self.bandas=self.count_bandas[:,15:18]
+            if Bands=='AB/':
+                self.bandas=self.count_bandas
         
         
         # self.Y_total=self.Y_d+self.Y_t+self.Y_a+self.Y_b+self.Y_g

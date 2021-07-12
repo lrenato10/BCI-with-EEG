@@ -29,16 +29,20 @@ class ConcatenateDataSetEEG():
                 self.Data_bandas=np.zeros((0,2*6))
             if Bands=='todas':
                 self.Data_bandas=np.zeros((0,5*6))
-            if Bands=='unica':
+            if Bands=='unica' or Bands=='A' or Bands=='B':
                 self.Data_bandas=np.zeros((0,1*6))
+            if Bands=='AB/':
+                self.Data_bandas=np.zeros((0,6*6))
         
         else:
             if Bands=='AB':
                 self.Data_bandas=np.zeros((0,2*3))
             if Bands=='todas':
                 self.Data_bandas=np.zeros((0,5*3))
-            if Bands=='unica':
+            if Bands=='unica' or Bands=='A' or Bands=='B':
                 self.Data_bandas=np.zeros((0,1*3))
+            if Bands=='AB/':
+                self.Data_bandas=np.zeros((0,6*3))
         
         
         self.EEG_Signal=np.zeros((0,250*self.Base.temp_amostra,3))#tentativa, valores coletados no tempo da amostra, eletrodos C3 CZ C4
