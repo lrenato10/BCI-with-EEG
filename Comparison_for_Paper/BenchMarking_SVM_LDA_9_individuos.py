@@ -30,7 +30,7 @@ media_test_SVM=np.zeros(9)
 std_test_SVM=np.zeros(9)
 
 for i in range(1,10):#passa pelos individuos
-    EEG=ConcatenateDataSetEEG( ID_inicial=i , ID_final=i , Remove_EOG=True, Bands='AB/', Feature='duplo') #Bands ('AB', 'A','B', 'AB/', 'todas' ou 'unica') Feature ('WAMP', 'RMS', 'duplo','NE' , 'LL' ou 'PSD')
+    EEG=ConcatenateDataSetEEG( ID_inicial=i , ID_final=i , Remove_EOG=True, Bands='AB', Feature='duplo') #Bands ('AB', 'A','B', 'AB/', 'todas' ou 'unica') Feature ('WAMP', 'RMS', 'duplo','NE' , 'LL' ou 'PSD')
     E=EEG.Data_bandas#energia os sinais
     label=EEG.Data_Label#rotulos do dataset
     
@@ -51,7 +51,7 @@ for i in range(1,10):#passa pelos individuos
         #gamma => inverso do raio do rbf
         
         
-        model=LDA(solver='lsqr',shrinkage='auto', tol=1e-8)
+        model=LDA(solver='lsqr',shrinkage='auto', tol=1e-7)
         model.fit(X_train,Y_train)#treina o modelo com o classificador selecionado
         
         score_train_LDA=model.score(X_train,Y_train)
@@ -61,7 +61,7 @@ for i in range(1,10):#passa pelos individuos
         scores_test_LDA=np.append(scores_test_LDA,score_test_LDA)
         
         
-        model=SVC(kernel='poly',degree=3,C=1, tol=1e-5,gamma='scale',cache_size=20000)#chama o modelo como um classificador de vetores de suporte
+        model=SVC(kernel='rbf',degree=3,C=1, tol=1e-5,gamma='scale',cache_size=20000)#chama o modelo como um classificador de vetores de suporte
         model.fit(X_train,Y_train)#treina o modelo com o classificador selecionado
         
         score_train_SVM=model.score(X_train,Y_train)
@@ -85,3 +85,8 @@ feature_std_LDA=np.std(media_test_LDA)
 
 feature_media_SVM=np.average(media_test_SVM)
 feature_std_SVM=np.std(media_test_SVM)
+
+np.savetxt("media_test_LDA.csv", media_test_LDA, delimiter=",", fmt='%1.2f')
+np.savetxt("std_test_LDA.csv", std_test_LDA, delimiter=",", fmt='%1.2f')
+np.savetxt("media_test_SVM.csv", media_test_SVM, delimiter=",", fmt='%1.2f')
+np.savetxt("std_test_SVM.csv", std_test_SVM, delimiter=",", fmt='%1.2f')

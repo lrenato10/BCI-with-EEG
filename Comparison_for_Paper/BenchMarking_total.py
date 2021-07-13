@@ -70,7 +70,7 @@ for b in range (4):#percorre as banda
             scores_test_SVM=[]
             #E=E/np.min(E)
             #===================================================treinar modelo====================================================
-            for j in range(50):#itera varias vezes para tirar media da acuracia
+            for j in range(100):#itera varias vezes para tirar media da acuracia
                 X_train, X_test, Y_train, Y_test = train_test_split(E,label,test_size=0.3)#separa dados de treinamento e validacao com 20% de validacao
                 #model=LDA(solver='lsqr',shrinkage='auto', tol=1e-8)
                 #model=LDA(solver='svd', tol=1e-8)
@@ -81,7 +81,7 @@ for b in range (4):#percorre as banda
                 #gamma => inverso do raio do rbf
                 
                 
-                model=LDA(solver='lsqr',shrinkage='auto', tol=1e-8)
+                model=LDA(solver='lsqr',shrinkage='auto', tol=1e-7)
                 model.fit(X_train,Y_train)#treina o modelo com o classificador selecionado
                 
                 score_train_LDA=model.score(X_train,Y_train)
@@ -91,7 +91,7 @@ for b in range (4):#percorre as banda
                 scores_test_LDA=np.append(scores_test_LDA,score_test_LDA)
                 
                 
-                model=SVC(kernel='poly',degree=3,C=1, tol=1e-5,gamma='scale',cache_size=20000)#chama o modelo como um classificador de vetores de suporte
+                model=SVC(kernel='rbf',degree=3,C=1, tol=1e-5,gamma='scale',cache_size=20000)#chama o modelo como um classificador de vetores de suporte
                 model.fit(X_train,Y_train)#treina o modelo com o classificador selecionado
                 
                 score_train_SVM=model.score(X_train,Y_train)
@@ -116,7 +116,7 @@ for b in range (4):#percorre as banda
         feature_media_SVM[b,f]=np.average(media_test_SVM)
         feature_std_SVM[b,f]=np.std(media_test_SVM)
 
-np.savetxt("feature_media_LDA_3.csv", feature_media_LDA, delimiter=",", fmt='%1.2f')
-np.savetxt("feature_std_LDA_3.csv", feature_std_LDA, delimiter=",", fmt='%1.2f')
-np.savetxt("feature_media_SVM_3.csv", feature_media_SVM, delimiter=",", fmt='%1.2f')
-np.savetxt("feature_std_SVM_3.csv", feature_std_SVM, delimiter=",", fmt='%1.2f')
+np.savetxt("feature_media_LDA_100N.csv", feature_media_LDA, delimiter=",", fmt='%1.2f')
+np.savetxt("feature_std_LDA_100N.csv", feature_std_LDA, delimiter=",", fmt='%1.2f')
+np.savetxt("feature_media_SVM_100N.csv", feature_media_SVM, delimiter=",", fmt='%1.2f')
+np.savetxt("feature_std_SVM_100N.csv", feature_std_SVM, delimiter=",", fmt='%1.2f')

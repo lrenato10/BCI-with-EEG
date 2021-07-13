@@ -170,6 +170,8 @@ class DataSetEEG_sem_EOG():
         
         if (Bands=='unica'):
             epsilon=2.4e-6#limear para contagem do WAMP
+        if (Bands=='AB/'):
+            epsilon=0.45e-6#limear para contagem do WAMP
         else:
             epsilon=0.55e-6#limear para contagem do WAMP
         
@@ -351,37 +353,40 @@ class DataSetEEG_sem_EOG():
                     self.count_4[i,b]=np.sum(self.fhat_4*np.conj(self.fhat_4)/N)#calcula a densidade espectral
 
                 
-            if (Feature=='duplo'):#WAMP+NE
+            if (Feature=='duplo'):#WAMP+RMS
                 for b in range(6):#percorre as bandas d t a b g u
-                    for t in range(N-1):#percorre o tempo de coleta do sinal
+                    for t in range(N-1):#percorre o tempo de coleta do sinal WAMP
                         for j in range(3):#percorre os eletrodos c3 cz c4
                             self.Dif[b,t,j]=np.abs(self.Y_bandas[b,t+1,j]-self.Y_bandas[b,t,j])#diferença de sinais consecutivos
                             if (self.Dif[b,t,j]>epsilon):#caso a diferenca seja maior q o epsilon atribui 1
                                 self.Dif[b,t,j]=1
                             else:
                                 self.Dif[b,t,j]=0
-                    for t in range(N-2):#percorre o tempo de coleta do sinal
-                        for j in range(3):#percorre os eletrodos c3 cz c4
-                            self.aux[b,t,j]=self.Y_bandas[b,t+1,j]*self.Y_bandas[b,t+1,j]-self.Y_bandas[b,t+2,j]*self.Y_bandas[b,t,j]
-                    
+                    #for t in range(N-2):#percorre o tempo de coleta do sinal NE
+                        #for j in range(3):#percorre os eletrodos c3 cz c4
+                            #self.aux[b,t,j]=self.Y_bandas[b,t+1,j]*self.Y_bandas[b,t+1,j]-self.Y_bandas[b,t+2,j]*self.Y_bandas[b,t,j]
+                
                     #conta quantos valores 1 na coluna de cada eletrodo
                     self.count_3d[i,b]=list(self.Dif[b,:,0]).count(1)
                     self.count_zd[i,b]=list(self.Dif[b,:,1]).count(1)
                     self.count_4d[i,b]=list(self.Dif[b,:,2]).count(1)
-                    # self.count_3[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,0]*self.Y_bandas[b,:,0]))/N)
-                    # self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]*self.Y_bandas[b,:,1]))/N)
-                    # self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]*self.Y_bandas[b,:,2]))/N)
-                    self.count_3[i,b]=np.sum(self.aux[b,:,0])
-                    self.count_z[i,b]=np.sum(self.aux[b,:,1])
-                    self.count_4[i,b]=np.sum(self.aux[b,:,2])
+                    self.count_3[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,0]*self.Y_bandas[b,:,0]))/N)#RMS
+                    self.count_z[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,1]*self.Y_bandas[b,:,1]))/N)
+                    self.count_4[i,b]=np.sqrt((np.sum(self.Y_bandas[b,:,2]*self.Y_bandas[b,:,2]))/N)
+                    # self.count_3[i,b]=np.sum(self.aux[b,:,0])#NE
+                    # self.count_z[i,b]=np.sum(self.aux[b,:,1])
+                    # self.count_4[i,b]=np.sum(self.aux[b,:,2])
             
                     
             #===================End of Calculations============================
         
         if (Feature=='duplo'):
-            self.count_3=self.count_3*np.average(self.count_3d)/np.average(self.count_3)#normaliza os dados do RMS com o WAMP
-            self.count_z=self.count_z*np.average(self.count_zd)/np.average(self.count_z)
-            self.count_4=self.count_4*np.average(self.count_4d)/np.average(self.count_4)
+            self.count_3=(self.count_3-np.average(self.count_3))/np.std(self.count_3)#normaliza os dados
+            self.count_z=(self.count_z-np.average(self.count_z))/np.std(self.count_z)
+            self.count_4=(self.count_4-np.average(self.count_4))/np.std(self.count_4)
+            self.count_3d=(self.count_3d-np.average(self.count_3d))/np.std(self.count_3d)
+            self.count_zd=(self.count_zd-np.average(self.count_zd))/np.std(self.count_zd)
+            self.count_4d=(self.count_4d-np.average(self.count_4d))/np.std(self.count_4d)
             
             self.count_3z4=np.concatenate((self.count_3,self.count_3d,self.count_z,self.count_zd,self.count_4,self.count_4d),axis=1)
             for i in range (6):#ordena as colunas para agrupar os 3 eletrodos juntos por banda
@@ -403,7 +408,11 @@ class DataSetEEG_sem_EOG():
             if Bands=='AB/':
                 self.bandas=self.count_bandas
         else:    
-        
+            #a normalizacao aparenta n ter surtido efeito
+            self.count_3=(self.count_3-np.average(self.count_3))/np.std(self.count_3)#normaliza os dados
+            self.count_z=(self.count_z-np.average(self.count_z))/np.std(self.count_z)
+            self.count_4=(self.count_4-np.average(self.count_4))/np.std(self.count_4)
+            
             self.count_3z4=np.concatenate((self.count_3,self.count_z,self.count_4),axis=1)
             for i in range (6):#ordena as colunas para agrupar os 3 eletrodos juntos por banda
                 for j in range (3):    
@@ -438,4 +447,4 @@ class DataSetEEG_sem_EOG():
         # plt.plot(self.X,self.Y_teste[:,2])
         
         
-#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB', Feature='PSD')
+#D=DataSetEEG_sem_EOG(ID=4,N=1, Bands='AB/', Feature='duplo')

@@ -17,7 +17,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 import numpy as np
 from mlxtend.plotting import plot_decision_regions#regiao de decisao da SVM
 
-EEG=ConcatenateDataSetEEG( ID_inicial=4 , ID_final=4 , Remove_EOG=True, Bands='AB/', Feature='RMS') #Bands ('AB', 'A','B', 'AB/', 'todas' ou 'unica') Feature ('WAMP', 'RMS', 'duplo','NE' , 'LL' ou 'PSD')
+EEG=ConcatenateDataSetEEG( ID_inicial=4 , ID_final=4 , Remove_EOG=True, Bands='AB/', Feature='duplo') #Bands ('AB', 'A','B', 'AB/', 'todas' ou 'unica') Feature ('WAMP', 'RMS', 'duplo','NE' , 'LL' ou 'PSD')
 E=EEG.Data_bandas#energia os sinais
 label=EEG.Data_Label#rotulos do dataset
 
@@ -25,7 +25,7 @@ scores_train=[]
 scores_test=[]
 #E=E/np.min(E)
 #%% ===================================================treinar modelo====================================================
-for i in range(50):
+for i in range(10):
     X_train, X_test, Y_train, Y_test = train_test_split(E,label,test_size=0.3)#separa dados de treinamento e validacao com 20% de validacao
     #model=LDA(solver='lsqr',shrinkage='auto', tol=1e-8)
     #model=LDA(solver='svd', tol=1e-8)
@@ -43,6 +43,11 @@ for i in range(50):
     scores_test=np.append(scores_test,score_test)
 
 media_train=np.average(scores_train)*100
-standard_deviation_train=np.std(scores_train)*100
+std_train=np.std(scores_train)*100
 media_test=np.average(scores_test)*100
-standard_deviation_test=np.std(scores_test)*100
+std_test=np.std(scores_test)*100
+
+#np.savetxt("media_train.csv", media_train, delimiter=",", fmt='%1.2f')
+#np.savetxt("std_train.csv", std_train, delimiter=",", fmt='%1.2f')
+#np.savetxt("media_test.csv", media_test, delimiter=",", fmt='%1.2f')
+#np.savetxt("std_test.csv", std_test, delimiter=",", fmt='%1.2f')
